@@ -1,15 +1,7 @@
 import json
 import hashlib
 import unicodedata
-
-def hexify(s):
-    h = ''
-    for c in s:
-        t = hex(ord(c))[2:]
-        if len(t) == 1:
-            h += '0'
-        h += t
-    return h
+from binascii import hexlify as hexify
 
 def hash_fn():
     return hashlib.sha256()
