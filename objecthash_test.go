@@ -1,0 +1,69 @@
+package objecthash
+
+import "fmt"
+
+func commonJSON(j string) {
+	fmt.Printf("%x\n", CommonJSONHash(j))
+}
+
+func ExampleCommonJSONHash_Common() {
+	commonJSON(`["foo", "bar"]`)
+	// Output: 32ae896c413cfdc79eec68be9139c86ded8b279238467c216cf2bec4d5f1e4a2
+}
+
+func ExampleCommonJSONHash_FloatAndInt() {
+	commonJSON(`["foo", {"bar":["baz", null, 1.0, 1.5, 0.0001, 1000.0, 2.0, -23.1234, 2.0]}]`)
+        // Integers and floats are the same in common JSON
+	commonJSON(`["foo", {"bar":["baz", null, 1, 1.5, 0.0001, 1000, 2, -23.1234, 2]}]`)
+	// Output:
+	// 783a423b094307bcb28d005bc2f026ff44204442ef3513585e7e73b66e3c2213
+	// 783a423b094307bcb28d005bc2f026ff44204442ef3513585e7e73b66e3c2213
+}
+
+func ExampleCommonJSONHash_KeyChange() {
+	commonJSON(`["foo", {"b4r":["baz", null, 1, 1.5, 0.0001, 1000, 2, -23.1234, 2]}]`)
+	// Output: 7e01f8b45da35386e4f9531ff1678147a215b8d2b1d047e690fd9ade6151e431
+}
+
+func ExampleCommonJSONHash_Unicode() {
+	commonJSON(`"ԱԲաբ"`)
+	// Output: 2a2a4485a4e338d8df683971956b1090d2f5d33955a81ecaad1a75125f7a316c
+}
+
+func ExampleCommonJSONHash_UnicodeNormalisation() {
+	commonJSON("\"\u03d3\"")
+	commonJSON("\"\u03d2\u0301\"")
+	// Output:
+	// f72826713a01881404f34975447bd6edcb8de40b191dc57097ebf4f5417a554d
+	// f72826713a01881404f34975447bd6edcb8de40b191dc57097ebf4f5417a554d
+}
+
+func objectHash(o interface{}) {
+	fmt.Printf("%x\n", ObjectHash(o))
+}
+
+func ExampleObjectHash_JSON() {
+	// Same as equivalent JSON object
+	o := []interface{}{`foo`, `bar`}
+	objectHash(o)
+	// Output: 32ae896c413cfdc79eec68be9139c86ded8b279238467c216cf2bec4d5f1e4a2
+}
+
+func ExampleObjectHash_JSON2() {
+	// Same as equivalent _Python_ JSON object
+	o := []interface{}{`foo`, map[string]interface{}{`bar`: []interface{}{`baz`, nil, 1, 1.5, 0.0001, 1000, 2, -23.1234, 2}}}
+	objectHash(o)
+	// Output: 726e7ae9e3fadf8a2228bf33e505a63df8db1638fa4f21429673d387dbd1c52a
+}
+
+func ExampleObjectHash_Set() {
+        o := map[string]interface{}{`thing1`: map[string]interface{}{`thing2`: Set{1, 2, `s`}}, `thing3`: 1234.567 }
+	objectHash(o)
+	// Output: 618cf0582d2e716a70e99c2f3079d74892fec335e3982eb926835967cb0c246c
+}
+
+func ExampleObjectHash_ComplexSet() {
+	o := Set{`foo`, 23.6, Set{Set{}}, Set{Set{1}}}
+	objectHash(o)
+	// Output: 3773b0a5283f91243a304d2bb0adb653564573bc5301aa8bb63156266ea5d398
+}
