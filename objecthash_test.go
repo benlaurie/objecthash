@@ -67,3 +67,9 @@ func ExampleObjectHash_ComplexSet() {
 	objectHash(o)
 	// Output: 3773b0a5283f91243a304d2bb0adb653564573bc5301aa8bb63156266ea5d398
 }
+
+func ExampleObjectHash_ComplexSetRepeated() {
+	o := Set{`foo`, 23.6, Set{Set{}}, Set{Set{1}}, Set{Set{}}}
+	objectHash(o)
+	// Output: 3773b0a5283f91243a304d2bb0adb653564573bc5301aa8bb63156266ea5d398
+}
