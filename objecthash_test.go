@@ -53,7 +53,12 @@ func ExampleObjectHash_JSON2() {
 	// Same as equivalent _Python_ JSON object
 	o := []interface{}{`foo`, map[string]interface{}{`bar`: []interface{}{`baz`, nil, 1, 1.5, 0.0001, 1000, 2, -23.1234, 2}}}
 	objectHash(o)
-	// Output: 726e7ae9e3fadf8a2228bf33e505a63df8db1638fa4f21429673d387dbd1c52a
+	// Same as equivalent Common JSON object
+	o = []interface{}{`foo`, map[string]interface{}{`bar`: []interface{}{`baz`, nil, 1.0, 1.5, 0.0001, 1000.0, 2.0, -23.1234, 2.0}}}
+	objectHash(o)
+	// Output:
+	// 726e7ae9e3fadf8a2228bf33e505a63df8db1638fa4f21429673d387dbd1c52a
+	// 783a423b094307bcb28d005bc2f026ff44204442ef3513585e7e73b66e3c2213
 }
 
 func ExampleObjectHash_Set() {
