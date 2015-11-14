@@ -30,7 +30,7 @@ class TestCommonJSONHash(unittest.TestCase):
                     '783a423b094307bcb28d005bc2f026ff44204442ef3513585e7e73b66e3c2213')
 
     def test_key_change(self):
-	self.verify('["foo", {"b4r":["baz", null, 1, 1.5, 0.0001, 1000, 2, -23.1234, 2]}]',
+        self.verify('["foo", {"b4r":["baz", null, 1, 1.5, 0.0001, 1000, 2, -23.1234, 2]}]',
                     '7e01f8b45da35386e4f9531ff1678147a215b8d2b1d047e690fd9ade6151e431')
 
     def test_unicode(self):
