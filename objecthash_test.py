@@ -100,8 +100,19 @@ class TestRedaction(unittest.TestCase):
                          '96e2aab962831956c80b542f056454be411f870055d37805feb3007c855bd823')
         self.verify_json('["foo", "**REDACTED**96e2aab962831956c80b542f056454be411f870055d37805feb3007c855bd823"]',
                          '783a423b094307bcb28d005bc2f026ff44204442ef3513585e7e73b66e3c2213')
+
         self.verify_json('["foo", {"bar":["baz", null, 1.0, 1.5, 0.0001, 1000.0, 2.0, -23.1234, 2.0]}]',
                          '783a423b094307bcb28d005bc2f026ff44204442ef3513585e7e73b66e3c2213')
+
+        self.verify_json('"baz"', '82f70430fa7b78951b3c4634d228756a165634df977aa1fada051d6828e78f30')
+        self.verify_json('0.0001', '1195afc7f0b70bb9d7960c3615668e072a1cbfbbb001f84871fd2e222a87be1d')
+        self.verify_json('["foo", {"bar": ["**REDACTED**82f70430fa7b78951b3c4634d228756a165634df977aa1fada051d6828e78f30", null, 1.0, 1.5, "**REDACTED**1195afc7f0b70bb9d7960c3615668e072a1cbfbbb001f84871fd2e222a87be1d", 1000.0, 2.0, -23.1234, 2.0]}]',
+                         '783a423b094307bcb28d005bc2f026ff44204442ef3513585e7e73b66e3c2213')
+
+        self.verify_json('"bar"', 'e303ce0bd0f4c1fdfe4cc1e837d7391241e2e047df10fa6101733dc120675dfe')
+        self.verify_json('["foo", {"**REDACTED**e303ce0bd0f4c1fdfe4cc1e837d7391241e2e047df10fa6101733dc120675dfe": ["baz", null, 1.0, 1.5, 0.0001, 1000.0, 2.0, -23.1234, 2.0]}]',
+                         '783a423b094307bcb28d005bc2f026ff44204442ef3513585e7e73b66e3c2213')
+
 
         
 if __name__ == '__main__':
