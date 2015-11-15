@@ -2,13 +2,13 @@
 
 import unittest
 import objecthash
-from binascii import hexlify as hexify
+from binascii import unhexlify
 
 
 class TestCommonJSONHash(unittest.TestCase):
     def verify(self, j, e):
         h = objecthash.common_json_hash(j)
-        self.assertEqual(hexify(h), e)
+        self.assertEqual(h, unhexlify(e))
         
     def test_common(self):
         self.verify('["foo", "bar"]',
@@ -39,7 +39,7 @@ class TestCommonJSONHash(unittest.TestCase):
 class TestPythonJSONHash(unittest.TestCase):
     def verify(self, j, e):
         h = objecthash.python_json_hash(j)
-        self.assertEqual(hexify(h), e)
+        self.assertEqual(h, unhexlify(e))
 
     def test_common(self):
         # The same as common JSON
@@ -57,7 +57,7 @@ class TestPythonJSONHash(unittest.TestCase):
 class TestObjectHash(unittest.TestCase):
     def verify(self, o, e):
         h = objecthash.obj_hash(o)
-        self.assertEqual(hexify(h), e)
+        self.assertEqual(h, unhexlify(e))
 
     def test_json(self):
         self.verify(['foo', {'bar': ['baz', None, 1, 1.5, 0.0001, 1000, 2, -23.1234, 2]}],
