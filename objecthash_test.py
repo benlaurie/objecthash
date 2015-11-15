@@ -100,6 +100,8 @@ class TestRedaction(unittest.TestCase):
                          '96e2aab962831956c80b542f056454be411f870055d37805feb3007c855bd823')
         self.verify_json('["foo", "**REDACTED**96e2aab962831956c80b542f056454be411f870055d37805feb3007c855bd823"]',
                          '783a423b094307bcb28d005bc2f026ff44204442ef3513585e7e73b66e3c2213')
+        self.verify_json('["foo", {"bar":["baz", null, 1.0, 1.5, 0.0001, 1000.0, 2.0, -23.1234, 2.0]}]',
+                    '783a423b094307bcb28d005bc2f026ff44204442ef3513585e7e73b66e3c2213')
 
         
 if __name__ == '__main__':
