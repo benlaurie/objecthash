@@ -175,7 +175,7 @@ def redactize(o):
     elif type(o) is float:
         return o
     elif type(o) is int:
-        return float(o)
+        return o
     elif type(o) is str:
         return redactize_unicode(o)
     elif o is None:
