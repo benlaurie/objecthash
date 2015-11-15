@@ -1,7 +1,7 @@
 import json
 import hashlib
 import unicodedata
-from binascii import hexlify as hexify
+from binascii import hexlify as hexify, unhexlify as unhexify
 
 def hash_fn():
     return hashlib.sha256()
@@ -80,6 +80,10 @@ def obj_hash_set(s):
         r += t
     return hash('s', r)
 
+class Redacted(object):
+    def __init__(self, hash):
+        self.hash = unhexify(hash)
+
 def obj_hash(o):
     if type(o) is list:
         return obj_hash_list(o)
@@ -95,6 +99,8 @@ def obj_hash(o):
         return obj_hash_unicode(unicode(o))
     elif type(o) is set or type(o) is frozenset:
         return obj_hash_set(o)
+    elif type(o) is Redacted:
+        return o.hash
     elif o is None:
         return hash('n', '')
     
@@ -139,6 +145,46 @@ def commonize(o):
 def common_json_hash(j):
     t = json.loads(j)
     t = commonize(t)
+    return obj_hash(t)
+
+def redactize_list(l):
+    r = []
+    for e in l:
+        r.append(redactize(e))
+    return r
+
+def redactize_dict(d):
+    r = {}
+    for (k, v) in d.items():
+        r[redactize(k)] = redactize(v)
+    return r
+
+def redactize_unicode(u):
+    if u.startswith('**REDACTED**'):
+        return Redacted(u[12:])
+    else:
+        return u
+
+def redactize(o):
+    if type(o) is list:
+        return redactize_list(o)
+    elif type(o) is dict:
+        return redactize_dict(o)
+    elif type(o) is unicode:
+        return redactize_unicode(o)
+    elif type(o) is float:
+        return o
+    elif type(o) is int:
+        return float(o)
+    elif type(o) is str:
+        return redactize_unicode(o)
+    elif o is None:
+        return o
+
+def common_redacted_json_hash(j):
+    t = json.loads(j)
+    t = commonize(t)
+    t = redactize(t)
     return obj_hash(t)
 
 # t = [ 'foo', { 'bar': ['baz', None, 1.0, 1.5, 0.0001, 1000.0, 2.0, -23.1234, 2]} ]
