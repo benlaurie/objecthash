@@ -25,6 +25,14 @@ func ExampleCommonJSONHash_KeyChange() {
 	// Output: 7e01f8b45da35386e4f9531ff1678147a215b8d2b1d047e690fd9ade6151e431
 }
 
+func ExampleCommonJSONHash_KeyOrderIndependence() {
+	commonJSON(`{"k1":"v1","k2":"v2","k3":"v3"}`)
+	commonJSON(`{"k2":"v2","k1":"v1","k3":"v3"}`)
+	// Output:
+	// ddd65f1f7568269a30df7cafc26044537dc2f02a1a0d830da61762fc3e687057
+	// ddd65f1f7568269a30df7cafc26044537dc2f02a1a0d830da61762fc3e687057
+}
+
 func ExampleCommonJSONHash_Unicode() {
 	commonJSON(`"ԱԲաբ"`)
 	// Output: 2a2a4485a4e338d8df683971956b1090d2f5d33955a81ecaad1a75125f7a316c
