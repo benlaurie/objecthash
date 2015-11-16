@@ -85,6 +85,10 @@ class Redacted(object):
     def __init__(self, hash):
         self.hash = unhexify(hash)
 
+class RedactedObject(Redacted):
+    def __init__(self, o):
+        self.hash = obj_hash(o)
+
 def obj_hash(o):
     if type(o) is list:
         return obj_hash_list(o)
@@ -100,7 +104,7 @@ def obj_hash(o):
         return obj_hash_unicode(unicode(o))
     elif type(o) is set or type(o) is frozenset:
         return obj_hash_set(o)
-    elif type(o) is Redacted:
+    elif isinstance(o, Redacted):
         return o.hash
     elif o is None:
         return hash('n', '')

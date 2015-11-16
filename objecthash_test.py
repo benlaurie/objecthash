@@ -133,7 +133,7 @@ class TestRedactable(unittest.TestCase):
     def test_redactability(self):
         t = objecthash.redactable(['foo', 'bar'])
         h = hexify(objecthash.obj_hash(t))
-        t[1] = objecthash.Redacted(hexify(objecthash.obj_hash(t[1])))
+        t[1] = objecthash.RedactedObject(t[1])
         self.verify(t, h)
 
 
