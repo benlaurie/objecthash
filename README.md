@@ -62,3 +62,9 @@ or even:
 ```
 
 Magic!
+
+## Redactability
+
+If your data is guessable, then redaction doesn't really help: the data can easily be reconstructed with a brute force attack. So, `objecthash` offers a way to decorate an object so that everything in it can be redacted _and_ be safe from brute-forcing. `redactable(o)` turns every basic object (except keys) in `o` into an array with two entries, the first being a 32 byte random string. Since keys are required to be strings, those are prefixed with the random string.
+
+`unredactable(o)` reverses the process.

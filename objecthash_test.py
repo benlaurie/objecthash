@@ -114,6 +114,22 @@ class TestRedaction(unittest.TestCase):
                          '783a423b094307bcb28d005bc2f026ff44204442ef3513585e7e73b66e3c2213')
 
 
-        
+class TestRedactable(unittest.TestCase):
+    def verify(self, j, e):
+        h = objecthash.obj_hash(j)
+        self.assertEqual(hexify(h), e)
+
+    def unverify(self, j, e):
+        h = objecthash.obj_hash(j)
+        self.assertNotEqual(hexify(h), e)
+
+    def test_fidelity(self):
+        t = objecthash.redactable(['foo', 'bar'])
+        self.unverify(t,
+                      '32ae896c413cfdc79eec68be9139c86ded8b279238467c216cf2bec4d5f1e4a2')
+        self.verify(objecthash.unredactable(t),
+                    '32ae896c413cfdc79eec68be9139c86ded8b279238467c216cf2bec4d5f1e4a2')
+
+
 if __name__ == '__main__':
         unittest.main(verbosity=2)

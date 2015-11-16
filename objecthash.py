@@ -1,5 +1,6 @@
 import json
 import hashlib
+import random
 import unicodedata
 from binascii import hexlify as hexify, unhexlify as unhexify
 
@@ -187,22 +188,66 @@ def common_redacted_json_hash(j):
     t = redactize(t)
     return obj_hash(t)
 
-# t = [ 'foo', { 'bar': ['baz', None, 1.0, 1.5, 0.0001, 1000.0, 2.0, -23.1234, 2]} ]
-# print hexify(obj_hash(t))
+def redactable_dict(d):
+    r = {}
+    for (k, v) in d.items():
+        r[redactable_key(k)] = redactable(v)
+    return r
 
-# t = [ 'foo', { 'bar': ['baz', None, 1.0, 1.5, 0.0001, 1000.0, 2, -23.1234, 2.0]} ]
-# print hexify(obj_hash(t))
+def redactable_entity(e):
+    return [redactable_rand(), e]
 
-# t = [ 'foo', { 'b4r': ['baz', None, 1.0, 1.5, 0.0001, 1000.0, 2, -23.1234, 2.0]} ]
-# print hexify(obj_hash(t))
+def redactable_key(k):
+    return redactable_rand() + k
 
-# t = { 'thing1': { 'thing2': set((2, 1, 's')) }, 'thing3': 1234.567 }
-# print hexify(obj_hash(t))
+def redactable_list(l):
+    r = []
+    for e in l:
+        r.append(redactable(e))
+    return r
 
-# t = { 'thing3': 1234.567, 'thing1': { 'thing2': set((2, 1, 's')) } }
-# print hexify(obj_hash(t))
+def redactable_rand():
+    r = ''
+    for x in range(32):
+        r += chr(random.SystemRandom().getrandbits(8))
+    return hexify(r)
 
-# t = { 'thing1': { 'thing2': set((1, 2, 't')) }, 'thing3': 1234.567 }
-# print hexify(obj_hash(t))
+def redactable(o):
+    if o is None:
+        return redactable_entity(o)
+    elif type(o) is dict:
+        return redactable_dict(o)
+    elif type(o) is float:
+        return redactable_entity(o)
+    elif type(o) is int:
+        return redactable_entity(o)
+    elif type(o) is list:
+        return redactable_list(o)
+    elif type(o) is str:
+        return redactable_entity(o)
+    elif type(o) is unicode:
+        return redactable_entity(o)
 
-# print hexify(obj_hash(.5))
+    print type(o)
+    assert False
+
+def unredactable_dict(d):
+    return {unredactable_key(k): unredactable(v) for (k, v) in d}
+
+def unredactable_key(k):
+    return k[32:]
+    
+def unredactable_list(l):
+    return [unredactable(e) for e in l]
+
+def unredactable(o):
+    if type(o) is list and len(o) == 2 and type(o[0]) is str:
+        return o[1]
+    elif type(o) is dict:
+        return unredactable_dict(o)
+    elif type(o) is list:
+        return unredactable_list(o)
+
+    print type(o)
+    assert False
+    
