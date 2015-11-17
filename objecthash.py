@@ -117,10 +117,7 @@ def python_json_hash(j):
     return obj_hash(t)
 
 def commonize_list(l):
-    r = []
-    for e in l:
-        r.append(commonize(e))
-    return r
+    return [commonize(e) for e in l]
 
 def commonize_dict(d):
     r = {}
@@ -153,10 +150,7 @@ def common_json_hash(j):
     return obj_hash(t)
 
 def redactize_list(l):
-    r = []
-    for e in l:
-        r.append(redactize(e))
-    return r
+    return [redactize(e) for e in l]
 
 def redactize_dict(d):
     r = {}
@@ -205,10 +199,7 @@ def redactable_key(k):
     return redactable_rand() + k
 
 def redactable_list(l):
-    r = []
-    for e in l:
-        r.append(redactable(e))
-    return r
+    return [redactable(e) for e in l]
 
 def redactable_rand():
     r = ''
