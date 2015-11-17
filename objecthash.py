@@ -120,10 +120,7 @@ def commonize_list(l):
     return [commonize(e) for e in l]
 
 def commonize_dict(d):
-    r = {}
-    for (k, v) in d.items():
-        r[commonize(k)] = commonize(v)
-    return r
+    return {commonize(k): commonize(v) for (k, v) in d.items()}
 
 def commonize(o):
     if type(o) is list:
@@ -153,10 +150,7 @@ def redactize_list(l):
     return [redactize(e) for e in l]
 
 def redactize_dict(d):
-    r = {}
-    for (k, v) in d.items():
-        r[redactize(k)] = redactize(v)
-    return r
+    return {redactize(k): redactize(v) for (k, v) in d.items()}
 
 def redactize_unicode(u):
     if u.startswith('**REDACTED**'):
@@ -187,10 +181,7 @@ def common_redacted_json_hash(j):
     return obj_hash(t)
 
 def redactable_dict(d):
-    r = {}
-    for (k, v) in d.items():
-        r[redactable_key(k)] = redactable(v)
-    return r
+    return {redactable_key(k): redactable(v) for (k, v) in d.items()}
 
 def redactable_entity(e):
     return [redactable_rand(), e]
@@ -227,7 +218,7 @@ def redactable(o):
     assert False
 
 def unredactable_dict(d):
-    return {unredactable_key(k): unredactable(v) for (k, v) in d}
+    return {unredactable_key(k): unredactable(v) for (k, v) in d.items()}
 
 def unredactable_key(k):
     return k[32:]
