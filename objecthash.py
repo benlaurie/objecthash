@@ -236,4 +236,33 @@ def unredactable(o):
 
     print type(o)
     assert False
-    
+
+def is_simple_type(t):
+    return t is str or t is unicode
+
+class ApplyToLeaves(object):
+    def __init__(self, leaf_fn):
+        self.leaf_fn = leaf_fn
+
+    def __call__(self, o):
+        t = type(o)
+        if t is dict:
+            return {self(k): self(v) for (k,v) in o.items()}
+        elif t is list:
+            return [self(e) for e in o]
+        elif t is set:
+            return set([self(e) for e in o])
+        elif is_simple_type(t):
+            return self.leaf_fn(o)
+
+        print type(o)
+        assert False
+
+def unicode_normalize_entity(e):
+    if type(e) is unicode:
+        return unicode_normalize(e)
+    elif type(e) is str:
+        return unicode_normalize(unicode(e))
+    return e
+
+unicode_normalizify = ApplyToLeaves(unicode_normalize_entity)
