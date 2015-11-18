@@ -60,8 +60,11 @@ or even:
 ```json
 ["foo", {"**REDACTED**e303ce0bd0f4c1fdfe4cc1e837d7391241e2e047df10fa6101733dc120675dfe": ["baz", null, 1.0, 1.5, 0.0001, 1000.0, 2.0, -23.1234, 2.0]}]
 ```
-
 Magic!
+
+### What You Hash Is What You Get
+
+Most object signing/verifying schemes (e.g. X509v3, JOSE) work by signing or verifying some canonical binary or text form of the object, which you then decode and hope you end up with what was actually signed. Using `objecthash` you decode first, *then* verify. If verification works, then the object you have is the object that was signed in the first place.
 
 ## Redactability
 
