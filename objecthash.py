@@ -184,63 +184,6 @@ def common_redacted_json_hash(j):
     t = redactize(t)
     return obj_hash(t)
 
-def redactable_dict(d):
-    return {redactable_key(k): redactable(v) for (k, v) in d.items()}
-
-def redactable_entity(e):
-    return [redactable_rand(), e]
-
-def redactable_key(k):
-    return redactable_rand() + k
-
-def redactable_list(l):
-    return [redactable(e) for e in l]
-
-def redactable_rand():
-    r = ''
-    for x in range(32):
-        r += chr(random.SystemRandom().getrandbits(8))
-    return hexify(r)
-
-def redactable(o):
-    if o is None:
-        return redactable_entity(o)
-    elif type(o) is dict:
-        return redactable_dict(o)
-    elif type(o) is float:
-        return redactable_entity(o)
-    elif type(o) is int:
-        return redactable_entity(o)
-    elif type(o) is list:
-        return redactable_list(o)
-    elif type(o) is str:
-        return redactable_entity(o)
-    elif type(o) is unicode:
-        return redactable_entity(o)
-
-    print type(o)
-    assert False
-
-def unredactable_dict(d):
-    return {unredactable_key(k): unredactable(v) for (k, v) in d.items()}
-
-def unredactable_key(k):
-    return k[32:]
-    
-def unredactable_list(l):
-    return [unredactable(e) for e in l]
-
-def unredactable(o):
-    if type(o) is list and len(o) == 2 and type(o[0]) is str:
-        return o[1]
-    elif type(o) is dict:
-        return unredactable_dict(o)
-    elif type(o) is list:
-        return unredactable_list(o)
-
-    print type(o)
-    assert False
-
 def is_simple_type(t):
     return t is str or t is unicode
 
@@ -261,6 +204,50 @@ class ApplyToLeaves(object):
 
         print type(o)
         assert False
+
+class ApplyToLeavesAndKeys(ApplyToLeaves):
+    def __init__(self, leaf_fn, key_fn):
+        ApplyToLeaves.__init__(self, leaf_fn)
+        self.key_fn = key_fn
+
+    def __call__(self, o):
+        if type(o) is dict:
+            return {self.key_fn(k): self(v) for (k, v) in o.items()}
+        return ApplyToLeaves.__call__(self, o)
+        
+def redactable_entity(e):
+    return [redactable_rand(), e]
+
+def redactable_key(k):
+    return redactable_rand() + k
+
+def redactable_rand():
+    r = ''
+    for x in range(32):
+        r += chr(random.SystemRandom().getrandbits(8))
+    return hexify(r)
+
+redactable = ApplyToLeavesAndKeys(redactable_entity, redactable_key)
+
+def unredactable_dict(d):
+    return {unredactable_key(k): unredactable(v) for (k, v) in d.items()}
+
+def unredactable_key(k):
+    return k[32:]
+    
+def unredactable_list(l):
+    return [unredactable(e) for e in l]
+
+def unredactable(o):
+    if type(o) is list and len(o) == 2 and type(o[0]) is str:
+        return o[1]
+    elif type(o) is dict:
+        return unredactable_dict(o)
+    elif type(o) is list:
+        return unredactable_list(o)
+
+    print type(o)
+    assert False
 
 def unicode_normalize_entity(e):
     if type(e) is unicode:
