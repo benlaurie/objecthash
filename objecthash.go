@@ -24,6 +24,8 @@ func hash(t string, b []byte) [hashLength]byte {
 	return rr;
 }
 
+// FIXME: if What You Hash Is What You Get, then this needs to be safe
+// to use as a set.
 // Note: not actually safe to use as a set
 type Set []interface{}
 
