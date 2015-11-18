@@ -36,6 +36,10 @@ def obj_hash_unicode(u):
     return hash('u', unicode_normalize(u))
 
 def float_normalize(f):
+    # special case 0
+    # Note that if we allowed f to end up > .5 or == 0, we'd get the same thing
+    if f == 0.0:
+        return '+0:'
     # sign
     s = '+'
     if f < 0:

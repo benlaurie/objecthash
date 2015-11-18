@@ -105,6 +105,10 @@ class TestObjectHash(unittest.TestCase):
         self.verify(set(('foo', 23.6, frozenset((frozenset(),)), frozenset((frozenset((1,)),)))),
                     '3773b0a5283f91243a304d2bb0adb653564573bc5301aa8bb63156266ea5d398')
 
+    def test_zero(self):
+        self.verify(0.0, '60101d8c9cb988411468e38909571f357daa67bff5a7b0a3f9ae295cd4aba33d')
+        self.verify(-0.0, '60101d8c9cb988411468e38909571f357daa67bff5a7b0a3f9ae295cd4aba33d')
+
 
 class TestRedaction(unittest.TestCase):
     def verify(self, o, e):
