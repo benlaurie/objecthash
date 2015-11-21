@@ -165,6 +165,12 @@ class TestRedactable(unittest.TestCase):
                       '32ae896c413cfdc79eec68be9139c86ded8b279238467c216cf2bec4d5f1e4a2')
         self.verify(objecthash.unredactable(t),
                     '32ae896c413cfdc79eec68be9139c86ded8b279238467c216cf2bec4d5f1e4a2')
+        t = objecthash.redactable(set(('foo', 23, 1.5, None)))
+        self.unverify(t,
+                      '32ae896c413cfdc79eec68be9139c86ded8b279238467c216cf2bec4d5f1e4a2')
+        self.verify(objecthash.unredactable(t),
+                    '5e9dd60afdd356f015d54b27647c2e3439a45547d1efb526260c306e89de2dba')
+
 
     def test_redactability(self):
         t = objecthash.redactable(['foo', 'bar'])

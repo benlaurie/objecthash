@@ -1,13 +1,14 @@
 import json
 import hashlib
 import random
+import types
 import unicodedata
 from binascii import hexlify as hexify, unhexlify as unhexify
 
 def hash_fn():
     return hashlib.sha256()
 
-def hash(t, b):
+def hash_primitive(t, b):
     #print hexify(t), hexify(b)
     m = hash_fn()
     m.update(t)
@@ -16,11 +17,28 @@ def hash(t, b):
     #print '=', hexify(t)
     return t
 
+# We need this class because otherwise we can't put a list in a set.
+class FrozenList(object):
+    def __init__(self, l):
+        self.l = tuple(l)
+
+    def __getitem__(self, key):
+        return self.l[key]
+
+    def __hash__(self):
+        return hash(self.l)
+
+    def __eq__(self, other):
+        return self.l == other.l
+
+    def __len__(self):
+        return len(self.l)
+
 def obj_hash_list(l):
     h = ''
     for o in l:
         h += obj_hash(o)
-    return hash('l', h)
+    return hash_primitive('l', h)
 
 def unicode_normalize(u):
     return unicodedata.normalize('NFC', u).encode('utf-8')
@@ -30,10 +48,10 @@ def obj_hash_dict(d):
     kh = [obj_hash(k) + obj_hash(v) for (k, v) in d.items()]
     for v in sorted(kh):
         h += v
-    return hash('d', h)
+    return hash_primitive('d', h)
 
 def obj_hash_unicode(u):
-    return hash('u', unicode_normalize(u))
+    return hash_primitive('u', unicode_normalize(u))
 
 def float_normalize(f):
     # special case 0
@@ -70,11 +88,10 @@ def float_normalize(f):
     return s
 
 def obj_hash_float(f):
-    # FIXME: probably a bad idea to include floats...
-    return hash('f', float_normalize(f))
+    return hash_primitive('f', float_normalize(f))
 
 def obj_hash_int(i):
-    return hash('i', str(i))
+    return hash_primitive('i', str(i))
 
 def obj_hash_set(s):
     h = []
@@ -83,7 +100,7 @@ def obj_hash_set(s):
     r = ''
     for t in sorted(h):
         r += t
-    return hash('s', r)
+    return hash_primitive('s', r)
 
 class Redacted(object):
     def __init__(self, hash):
@@ -94,7 +111,7 @@ class RedactedObject(Redacted):
         self.hash = obj_hash(o)
 
 def obj_hash(o):
-    if type(o) is list:
+    if type(o) is list or type(o) is FrozenList:
         return obj_hash_list(o)
     elif type(o) is dict:
         return obj_hash_dict(o)
@@ -111,7 +128,7 @@ def obj_hash(o):
     elif isinstance(o, Redacted):
         return o.hash
     elif o is None:
-        return hash('n', '')
+        return hash_primitive('n', '')
     
     print type(o)
     assert False
@@ -184,8 +201,8 @@ def common_redacted_json_hash(j):
     t = redactize(t)
     return obj_hash(t)
 
-def is_simple_type(t):
-    return t is str or t is unicode
+def is_primitive_type(t):
+    return t is str or t is unicode or t is float or t is int or t is types.NoneType
 
 class ApplyToLeaves(object):
     def __init__(self, leaf_fn):
@@ -199,7 +216,7 @@ class ApplyToLeaves(object):
             return [self(e) for e in o]
         elif t is set:
             return set([self(e) for e in o])
-        elif is_simple_type(t):
+        elif is_primitive_type(t):
             return self.leaf_fn(o)
 
         print type(o)
@@ -216,7 +233,7 @@ class ApplyToLeavesAndKeys(ApplyToLeaves):
         return ApplyToLeaves.__call__(self, o)
         
 def redactable_entity(e):
-    return [redactable_rand(), e]
+    return FrozenList([redactable_rand(), e])
 
 def redactable_key(k):
     return redactable_rand() + k
@@ -238,13 +255,20 @@ def unredactable_key(k):
 def unredactable_list(l):
     return [unredactable(e) for e in l]
 
+def unredactable_set(s):
+    return set([unredactable(e) for e in s])
+
 def unredactable(o):
-    if type(o) is list and len(o) == 2 and type(o[0]) is str:
+    t = type(o)
+    if (t is list or t is FrozenList) and len(o) == 2 and type(o[0]) is str:
+        assert is_primitive_type(type(o[1]))
         return o[1]
-    elif type(o) is dict:
+    elif t is dict:
         return unredactable_dict(o)
-    elif type(o) is list:
+    elif t is list:
         return unredactable_list(o)
+    elif t is set:
+        return unredactable_set(o)
 
     print type(o)
     assert False
