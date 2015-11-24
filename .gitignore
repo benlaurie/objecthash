@@ -2,3 +2,4 @@
 *.pyc
 pkg/
 src/
+objecthash_test

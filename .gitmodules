@@ -1,0 +1,3 @@
+[submodule "crypto-algorithms"]
+	path = crypto-algorithms
+	url = https://github.com/B-Con/crypto-algorithms.git
