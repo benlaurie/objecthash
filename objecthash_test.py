@@ -66,6 +66,12 @@ class TestCommonJSONHash(unittest.TestCase):
                     'f72826713a01881404f34975447bd6edcb8de40b191dc57097ebf4f5417a554d')
         self.verify(u'"\u03d2\u0301"',
                     'f72826713a01881404f34975447bd6edcb8de40b191dc57097ebf4f5417a554d')
+
+    def test_boolean(self):
+        self.verify('true',
+                    '7dc96f776c8423e57a2785489a3f9c43fb6e756876d6ad9a9cac4aa4e72ec193')
+        self.verify('false',
+                    'c02c0b965e023abee808f2b548d8d5193a8b5229be6f3121a6f16e2d41a449b3')
         
         
 class TestPythonJSONHash(unittest.TestCase):

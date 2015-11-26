@@ -34,6 +34,9 @@ class FrozenList(object):
     def __len__(self):
         return len(self.l)
 
+def obj_hash_bool(b):
+    return hash_primitive('b', '1' if b else '0')
+
 def obj_hash_list(l):
     h = ''
     for o in l:
@@ -125,6 +128,8 @@ def obj_hash(o):
         return obj_hash_unicode(unicode(o))
     elif type(o) is set or type(o) is frozenset:
         return obj_hash_set(o)
+    elif type(o) is bool:
+        return obj_hash_bool(o)
     elif isinstance(o, Redacted):
         return o.hash
     elif o is None:
@@ -155,6 +160,8 @@ def commonize(o):
     elif type(o) is int:
         return float(o)
     elif type(o) is str:
+        return o
+    elif type(o) is bool:
         return o
     elif o is None:
         return o
