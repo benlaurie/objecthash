@@ -174,40 +174,6 @@ def common_json_hash(j):
     t = commonize(t)
     return obj_hash(t)
 
-def redactize_list(l):
-    return [redactize(e) for e in l]
-
-def redactize_dict(d):
-    return {redactize(k): redactize(v) for (k, v) in d.items()}
-
-def redactize_unicode(u):
-    if u.startswith('**REDACTED**'):
-        return Redacted(u[12:])
-    else:
-        return u
-
-def redactize(o):
-    if type(o) is list:
-        return redactize_list(o)
-    elif type(o) is dict:
-        return redactize_dict(o)
-    elif type(o) is unicode:
-        return redactize_unicode(o)
-    elif type(o) is float:
-        return o
-    elif type(o) is int:
-        return o
-    elif type(o) is str:
-        return redactize_unicode(o)
-    elif o is None:
-        return o
-
-def common_redacted_json_hash(j):
-    t = json.loads(j)
-    t = commonize(t)
-    t = redactize(t)
-    return obj_hash(t)
-
 def is_primitive_type(t):
     return t is str or t is unicode or t is float or t is int or t is types.NoneType
 
@@ -228,6 +194,20 @@ class ApplyToLeaves(object):
 
         print type(o)
         assert False
+
+def redactize_unicode(u):
+    if (type(u) is str or type(u) is unicode) and u.startswith('**REDACTED**'):
+        return Redacted(u[12:])
+    else:
+        return u
+
+redactize = ApplyToLeaves(redactize_unicode)
+
+def common_redacted_json_hash(j):
+    t = json.loads(j)
+    t = commonize(t)
+    t = redactize(t)
+    return obj_hash(t)
 
 class ApplyToLeavesAndKeys(ApplyToLeaves):
     def __init__(self, leaf_fn, key_fn):
