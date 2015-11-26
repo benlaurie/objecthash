@@ -200,6 +200,7 @@ bool object_hash(/*const*/ json_object *j, byte hash[HASH_SIZE]) {
   }
   printf("type = %d\n", type);
   assert(false);
+  return false;
 }
 
 bool python_json_hash(const char * const json, hash hash) {

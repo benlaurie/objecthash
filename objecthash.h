@@ -11,3 +11,4 @@ typedef byte hash[HASH_SIZE];
 typedef SHA256_CTX hash_ctx;
 
 bool common_json_hash(const char *json, hash h);
+bool python_json_hash(const char * const json, hash hash);
