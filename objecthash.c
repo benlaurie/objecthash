@@ -89,6 +89,14 @@ static bool object_hash_dict(/*const*/ json_object * const d, hash h) {
   return true;
 }
 
+static bool object_hash_int(int64_t i, hash h) {
+  char buf[100];
+
+  sprintf(buf, "%ld", i);
+  hash_bytes('i', (byte *)buf, strlen(buf), h);
+  return true;
+}
+
 static void float_normalize(double f, char out[1000]) {
   const char * const base = out;
   
@@ -175,7 +183,7 @@ bool object_hash(/*const*/ json_object *j, byte hash[HASH_SIZE]) {
   case json_type_double:
     return object_hash_float(json_object_get_double(j), hash);
   case json_type_int:
-    assert(false);
+    return object_hash_int(json_object_get_int64(j), hash);
   case json_type_string: {
     const char *s = json_object_get_string(j);
     return object_hash_str(s, strlen(s), hash);
@@ -194,7 +202,7 @@ bool object_hash(/*const*/ json_object *j, byte hash[HASH_SIZE]) {
   assert(false);
 }
 
-bool common_json_hash(const char * const json, hash hash) {
+bool python_json_hash(const char * const json, hash hash) {
     json_object * const j = json_tokener_parse(json);
     return object_hash(j, hash);
 }
