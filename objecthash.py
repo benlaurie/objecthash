@@ -43,9 +43,6 @@ def obj_hash_list(l):
         h += obj_hash(o)
     return hash_primitive('l', h)
 
-def _unicode_normalize(u):
-    return unicodedata.normalize('NFC', u).encode('utf-8')
-
 def obj_hash_dict(d):
     h = ''
     kh = [obj_hash(k) + obj_hash(v) for (k, v) in d.items()]
@@ -54,7 +51,7 @@ def obj_hash_dict(d):
     return hash_primitive('d', h)
 
 def obj_hash_unicode(u):
-    return hash_primitive('u', _unicode_normalize(u))
+    return hash_primitive('u', u.encode('utf-8'))
 
 def float_normalize(f):
     # special case 0
@@ -174,6 +171,7 @@ commonize = ApplyToLeaves(lambda o: float(o), (int,))
 def common_json_hash(j):
     t = json.loads(j)
     t = commonize(t)
+    t = unicode_normalize(t)
     return obj_hash(t)
 
 def redactize_unicode(u):
@@ -239,6 +237,9 @@ def unredactable(o):
 
     print type(o)
     assert False
+
+def _unicode_normalize(u):
+    return unicodedata.normalize('NFC', u)
 
 def unicode_normalize_entity(e):
     if type(e) is unicode:
