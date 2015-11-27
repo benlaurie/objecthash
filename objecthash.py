@@ -211,32 +211,18 @@ def redactable_rand():
 
 redactable = ApplyToLeavesAndKeys(redactable_entity, redactable_key)
 
-def unredactable_dict(d):
-    return {unredactable_key(k): unredactable(v) for (k, v) in d.items()}
+class ApplyUnredactable(ApplyToLeavesAndKeys):
+    def __init__(self):
+        ApplyToLeavesAndKeys.__init__(self, None, lambda k: k[32:])
 
-def unredactable_key(k):
-    return k[32:]
-    
-def unredactable_list(l):
-    return [unredactable(e) for e in l]
+    def __call__(self, o):
+        t = type(o)
+        if (t is list or t is FrozenList) and len(o) == 2 and type(o[0]) is str:
+            assert is_primitive_type(type(o[1]))
+            return o[1]
+        return ApplyToLeavesAndKeys.__call__(self, o)
 
-def unredactable_set(s):
-    return set([unredactable(e) for e in s])
-
-def unredactable(o):
-    t = type(o)
-    if (t is list or t is FrozenList) and len(o) == 2 and type(o[0]) is str:
-        assert is_primitive_type(type(o[1]))
-        return o[1]
-    elif t is dict:
-        return unredactable_dict(o)
-    elif t is list:
-        return unredactable_list(o)
-    elif t is set:
-        return unredactable_set(o)
-
-    print type(o)
-    assert False
+unredactable = ApplyUnredactable()
 
 def _unicode_normalize(u):
     return unicodedata.normalize('NFC', u)
