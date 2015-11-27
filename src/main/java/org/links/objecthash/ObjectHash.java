@@ -4,6 +4,8 @@ import java.nio.ByteBuffer;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Iterator;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -16,6 +18,7 @@ import org.json.JSONTokener;
 public class ObjectHash implements Comparable<ObjectHash> {
   private static final int SHA256_BLOCK_SIZE = 32;
   private static final String SHA256 = "SHA-256";
+  private static final Logger LOG = Logger.getLogger(ObjectHash.class.getName());
 
   private byte[] hash;
   private MessageDigest digester;
@@ -49,11 +52,19 @@ public class ObjectHash implements Comparable<ObjectHash> {
         hashObject((JSONObject) obj);
         break;
       }
+      case INT: {
+        hashInteger(obj);
+        break;
+      }
       case STRING: {
         hashString((String) obj);
         break;
       }
-      // TODO(phad): types BOOLEAN, INT, FLOAT, NULL
+      case NULL: {
+        hashNull();
+        break;
+      }
+      // TODO(phad): types BOOLEAN, FLOAT
       default: {
         throw new IllegalArgumentException("Illegal type in JSON: "
                                            + obj.getClass());
@@ -74,6 +85,14 @@ public class ObjectHash implements Comparable<ObjectHash> {
     hashTaggedBytes('u', str.getBytes());
   }
 
+  private void hashInteger(Object value) throws NoSuchAlgorithmException {
+    String str = value.toString();
+    hashTaggedBytes('i', str.getBytes());
+  }
+
+  private void hashNull() throws NoSuchAlgorithmException {
+    hashTaggedBytes('n', "".getBytes());
+  }
 
   private void hashList(JSONArray list) throws NoSuchAlgorithmException,
                                                JSONException {
@@ -129,19 +148,31 @@ public class ObjectHash implements Comparable<ObjectHash> {
   }
 
   private static JsonType getType(Object jsonObj) {
-    if (jsonObj instanceof JSONArray) {
+    if (jsonObj == JSONObject.NULL) {
+      return JsonType.NULL;
+    } else  if (jsonObj instanceof JSONArray) {
       return JsonType.ARRAY;
     } else if (jsonObj instanceof JSONObject) {
       return JsonType.OBJECT;
     } else if (jsonObj instanceof String) {
       return JsonType.STRING;
+    } else if (jsonObj instanceof Integer || jsonObj instanceof Long) {
+      return JsonType.INT;
     } else {
+      LOG.log(Level.WARNING, "jsonObj is_a " + jsonObj.getClass());
       return JsonType.UNKNOWN;
     }
   }
 
   public static ObjectHash commonJsonHash(String json)
       throws JSONException, NoSuchAlgorithmException {
+    // TODO(phad): this.
+    return new ObjectHash();
+  }
+
+  public static ObjectHash pythonJsonHash(String json)
+      throws JSONException, NoSuchAlgorithmException {
+    // TODO(phad): this.
     JSONTokener tokener = new JSONTokener(json);
     Object outerValue = tokener.nextValue();
     JsonType outerType = getType(outerValue);
@@ -154,12 +185,6 @@ public class ObjectHash implements Comparable<ObjectHash> {
     ObjectHash h = new ObjectHash();
     h.hashAny(outerValue);
     return h;
-  }
-
-  public static ObjectHash pythonJsonHash(String json)
-      throws JSONException, NoSuchAlgorithmException {
-    // TODO(phad): this.
-    return new ObjectHash();
   }
 
   @Override
@@ -184,15 +209,19 @@ public class ObjectHash implements Comparable<ObjectHash> {
     return hash;
   }
 
-  public String toHex() {
+  private static String toHex(byte[] buffer) {
     StringBuffer hexString = new StringBuffer();
-    for (int idx = 0; idx < hash.length; ++idx) {
-      String hex = Integer.toHexString(0xff & hash[idx]);
+    for (int idx = 0; idx < buffer.length; ++idx) {
+      String hex = Integer.toHexString(0xff & buffer[idx]);
       if (hex.length() == 1) {
         hexString.append('0');
       }
       hexString.append(hex);
     }
     return hexString.toString();
+  }
+
+  public String toHex() {
+    return toHex(hash);
   }
 }

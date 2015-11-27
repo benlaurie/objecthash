@@ -41,6 +41,20 @@ class TestCommonJSONHash(unittest.TestCase):
         self.verify('["foo", "bar"]',
                     '32ae896c413cfdc79eec68be9139c86ded8b279238467c216cf2bec4d5f1e4a2')
 
+    def test_int(self):
+        self.verify('[123]',
+                    '2e72db006266ed9cdaa353aa22b9213e8a3c69c838349437c06896b1b34cee36')
+        self.verify('[1, 2, 3]',
+                    '925d474ac71f6e8cb35dd951d123944f7cabc5cda9a043cf38cd638cc0158db0')
+        self.verify('[123456789012345]',
+                    'f446de5475e2f24c0a2b0cd87350927f0a2870d1bb9cbaa794e789806e4c0836')
+        self.verify('[123456789012345, 678901234567890]',
+                    'd4cca471f1c68f62fbc815b88effa7e52e79d110419a7c64c1ebb107b07f7f56')
+
+    def test_null(self):
+        self.verify('[null]',
+                    '5fb858ed3ef4275e64c2d5c44b77534181f7722b7765288e76924ce2f9f7f7db')
+
     def test_float_and_int(self):
         self.verify('["foo", {"bar":["baz", null, 1.0, 1.5, 0.0001, 1000.0, 2.0, -23.1234, 2.0]}]',
                     '783a423b094307bcb28d005bc2f026ff44204442ef3513585e7e73b66e3c2213')
@@ -77,6 +91,21 @@ class TestPythonJSONHash(unittest.TestCase):
         # The same as common JSON
         self.verify('["foo", "bar"]',
                     '32ae896c413cfdc79eec68be9139c86ded8b279238467c216cf2bec4d5f1e4a2')
+
+    def test_int(self):
+        self.verify('[123]',
+                    '1b93f704451e1a7a1b8c03626ffcd6dec0bc7ace947ff60d52e1b69b4658ccaa')
+        self.verify('[1, 2, 3]',
+                    '157bf16c70bd4c9673ffb5030552df0ee2c40282042ccdf6167850edc9044ab7')
+        self.verify('[123456789012345]',
+                    '3488b9bc37cce8223a032760a9d4ef488cdfebddd9e1af0b31fcd1d7006369a4')
+        self.verify('[123456789012345, 678901234567890]',
+                    '031ef1aaeccea3bced3a1c6237a4fc00ed4d629c9511922c5a3f4e5c128b0ae4')
+
+    def test_null(self):
+        # The same as common JSON
+        self.verify('[null]',
+                    '5fb858ed3ef4275e64c2d5c44b77534181f7722b7765288e76924ce2f9f7f7db')
 
     def test_float_and_int(self):
         self.verify('["foo", {"bar":["baz", null, 1.0, 1.5, 0.0001, 1000.0, 2.0, -23.1234, 2.0]}]',

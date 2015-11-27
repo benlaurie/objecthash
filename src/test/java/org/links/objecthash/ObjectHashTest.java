@@ -9,7 +9,7 @@ import org.junit.Test;
 public class ObjectHashTest {
 
   private void runTest(String json, String expectedHash) throws Exception {
-    ObjectHash r = ObjectHash.commonJsonHash(json);
+    ObjectHash r = ObjectHash.pythonJsonHash(json);
     ObjectHash e = ObjectHash.fromHex(expectedHash);
     assertEquals(e, r);
   }
@@ -49,6 +49,28 @@ public class ObjectHashTest {
     runTest("{\"foo\": [\"bar\", \"baz\"], \"qux\": [\"norf\"]}",
         "f1a9389f27558538a064f3cc250f8686a0cebb85f1cab7f4d4dcc416ceda3c92");
 
+  }
+
+  @Test
+  public void testNull() throws Exception {
+    runTest("[null]",
+        "5fb858ed3ef4275e64c2d5c44b77534181f7722b7765288e76924ce2f9f7f7db");
+  }
+
+  @Test
+  public void test32BitIntegers() throws Exception {
+    runTest("[123]",
+        "1b93f704451e1a7a1b8c03626ffcd6dec0bc7ace947ff60d52e1b69b4658ccaa");
+    runTest("[1, 2, 3]",
+        "157bf16c70bd4c9673ffb5030552df0ee2c40282042ccdf6167850edc9044ab7");
+  }
+
+  @Test
+  public void test64BitIntegers() throws Exception {
+    runTest("[123456789012345]",
+        "3488b9bc37cce8223a032760a9d4ef488cdfebddd9e1af0b31fcd1d7006369a4");
+    runTest("[123456789012345, 678901234567890]",
+        "031ef1aaeccea3bced3a1c6237a4fc00ed4d629c9511922c5a3f4e5c128b0ae4");
   }
 
   private final static String[] BAD_JSONS =
