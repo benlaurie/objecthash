@@ -3,7 +3,12 @@ package org.links.objecthash;
 import java.nio.ByteBuffer;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Iterator;
+import java.util.List;
+import java.util.TreeSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -43,6 +48,7 @@ public class ObjectHash implements Comparable<ObjectHash> {
                                           JSONException {
     digester.reset();
     JsonType outerType = getType(obj);
+    LOG.info("Next element: " + outerType);
     switch (outerType) {
       case ARRAY: {
         hashList((JSONArray) obj);
@@ -122,11 +128,34 @@ public class ObjectHash implements Comparable<ObjectHash> {
     hash = digester.digest();
   }
 
+  private String debugString(Iterable<ByteBuffer> buffers) {
+    StringBuilder sb = new StringBuilder();
+    for (ByteBuffer buff : buffers) {
+      sb.append('\n');
+      sb.append(toHex(buff.array()));
+    }
+    return sb.toString();
+  }
+
   private void hashObject(JSONObject obj) throws NoSuchAlgorithmException, 
                                                  JSONException {
-    ByteBuffer buff = ByteBuffer.allocate(2 * obj.length() * SHA256_BLOCK_SIZE);
+    List<ByteBuffer> buffers = new ArrayList<ByteBuffer>();
+    Comparator<ByteBuffer> ordering = new Comparator<ByteBuffer>() {
+        @Override
+        public int compare(ByteBuffer left, ByteBuffer right) {
+          for (int idx = 0; idx < left.array().length; ++idx) {
+            if (left.array()[idx] < right.array()[idx]) {
+              return -1;
+            } else if (left.array()[idx] > right.array()[idx]) {
+              return 1;
+            }
+          }
+          return 0;
+        }          
+    };
     Iterator<String> keys = obj.keys();
     while (keys.hasNext()) {
+      ByteBuffer buff = ByteBuffer.allocate(2 * SHA256_BLOCK_SIZE);
       String key = keys.next();
       // TODO(phad): would be nice to chain all these calls builder-stylee.
       ObjectHash hKey = new ObjectHash();
@@ -135,8 +164,17 @@ public class ObjectHash implements Comparable<ObjectHash> {
       hVal.hashAny(obj.get(key));
       buff.put(hKey.hash());
       buff.put(hVal.hash());
+      buffers.add(buff);
     }
-    hashTaggedBytes('d', buff.array());
+    LOG.info("Accumulated ByteBuffers: " + debugString(buffers));
+    Collections.sort(buffers, ordering);
+    LOG.info("Sorted ByteBuffers: " + debugString(buffers));
+    digester.reset();
+    digester.update((byte) 'd');
+    for (ByteBuffer buff : buffers) {
+      digester.update(buff.array());
+    }
+    hash = digester.digest();
   }
 
   private static int parseHex(char digit) {
@@ -192,6 +230,9 @@ public class ObjectHash implements Comparable<ObjectHash> {
 
   public static ObjectHash pythonJsonHash(String json)
       throws JSONException, NoSuchAlgorithmException {
+    LOG.info("\n=============================================\n"
+             + "= JSON: " + json + "\n"
+             + "=============================================");
     ObjectHash h = new ObjectHash();
     h.hashAny(new JSONTokener(json).nextValue());
     return h;

@@ -106,9 +106,6 @@ public class ObjectHashTest {
       String json = line;
       if (!iter.hasNext()) break;
       String hash = iter.next();
-      // TODO(phad): remove this when key-order-independence is done.
-      if (json.contains("k1"))
-        continue;
       LOG.info("Testing JSON: " + json);
       runTest(json, hash);
     }
