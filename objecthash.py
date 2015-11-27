@@ -201,7 +201,7 @@ class ApplyToLeavesAndKeys(ApplyToLeaves):
         return ApplyToLeaves.__call__(self, o)
         
 def redactable_entity(e):
-    return FrozenList([redactable_rand(), e])
+    return FrozenList((redactable_rand(), e))
 
 def redactable_key(k):
     return redactable_rand() + k
