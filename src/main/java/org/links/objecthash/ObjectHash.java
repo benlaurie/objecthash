@@ -182,10 +182,8 @@ public class ObjectHash implements Comparable<ObjectHash> {
 
   public static ObjectHash pythonJsonHash(String json)
       throws JSONException, NoSuchAlgorithmException {
-    JSONTokener tokener = new JSONTokener(json);
-    Object outerValue = tokener.nextValue();
     ObjectHash h = new ObjectHash();
-    h.hashAny(outerValue);
+    h.hashAny(new JSONTokener(json).nextValue());
     return h;
   }
 
