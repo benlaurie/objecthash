@@ -1,8 +1,9 @@
 package org.links.objecthash;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
+import org.json.JSONException;
 import org.junit.Test;
 
 public class ObjectHashTest {
@@ -48,6 +49,23 @@ public class ObjectHashTest {
     runTest("{\"foo\": [\"bar\", \"baz\"], \"qux\": [\"norf\"]}",
         "f1a9389f27558538a064f3cc250f8686a0cebb85f1cab7f4d4dcc416ceda3c92");
 
+  }
+
+  private final static String[] BAD_JSONS =
+      { "", "null", "1", "\"\"", "\"foo\"", "[", "]", "{", "}" };
+
+  @Test
+  public void testIllegalJSONs() throws Exception {
+    for (String badJson : BAD_JSONS) {
+      try {
+        runTest(badJson, "deadbeef");
+        fail("JSONException was expected for input \"" + badJson + "\"");
+      } catch (JSONException e) {
+        // expected
+      } catch (Exception e) {
+        fail("Caught " + e + " but wanted JSONException");
+      }
+    }
   }
 
   private final static String[][] HEXVALUES = {

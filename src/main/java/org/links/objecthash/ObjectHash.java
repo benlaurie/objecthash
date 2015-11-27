@@ -142,24 +142,17 @@ public class ObjectHash implements Comparable<ObjectHash> {
 
   public static ObjectHash commonJsonHash(String json)
       throws JSONException, NoSuchAlgorithmException {
-    ObjectHash h = new ObjectHash();
     JSONTokener tokener = new JSONTokener(json);
     Object outerValue = tokener.nextValue();
     JsonType outerType = getType(outerValue);
-    switch (outerType) {
-      case ARRAY: {
-        h.hashList((JSONArray) outerValue);
-        break;
-      }
-      case OBJECT: {
-        h.hashObject((JSONObject) outerValue);
-        break;
-      }
-      default: {
-        throw new IllegalArgumentException("Illegal outer type in JSON: "
-                                           + outerType);
-      }
+    // TODO(phad): maybe we don't need to make this check.  But it seems that
+    // org.json.JSONTokener is quite happy to parse illegal JSON docs such as
+    // 'none', '"string"', etc.
+    if (outerType != JsonType.ARRAY && outerType != JsonType.OBJECT) {
+      throw new JSONException("Illegal outer type in JSON: " + outerType);
     }
+    ObjectHash h = new ObjectHash();
+    h.hashAny(outerValue);
     return h;
   }
 
