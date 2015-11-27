@@ -73,8 +73,15 @@ public class ObjectHashTest {
         "031ef1aaeccea3bced3a1c6237a4fc00ed4d629c9511922c5a3f4e5c128b0ae4");
   }
 
-  private final static String[] BAD_JSONS =
-      { "", "null", "1", "\"\"", "\"foo\"", "[", "]", "{", "}" };
+  @Test
+  public void testBoolean() throws Exception {
+    runTest("true",
+        "7dc96f776c8423e57a2785489a3f9c43fb6e756876d6ad9a9cac4aa4e72ec193");
+    runTest("false",
+        "c02c0b965e023abee808f2b548d8d5193a8b5229be6f3121a6f16e2d41a449b3");
+  }
+
+  private final static String[] BAD_JSONS = { "", "[", "]", "{", "}" };
 
   @Test
   public void testIllegalJSONs() throws Exception {

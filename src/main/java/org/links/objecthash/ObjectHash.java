@@ -64,7 +64,11 @@ public class ObjectHash implements Comparable<ObjectHash> {
         hashNull();
         break;
       }
-      // TODO(phad): types BOOLEAN, FLOAT
+      case BOOLEAN: {
+        hashBoolean((Boolean) obj);
+        break;
+      }
+      // TODO(phad): types FLOAT
       default: {
         throw new IllegalArgumentException("Illegal type in JSON: "
                                            + obj.getClass());
@@ -92,6 +96,10 @@ public class ObjectHash implements Comparable<ObjectHash> {
 
   private void hashNull() throws NoSuchAlgorithmException {
     hashTaggedBytes('n', "".getBytes());
+  }
+
+  private void hashBoolean(boolean bool) throws NoSuchAlgorithmException {
+    hashTaggedBytes('b', (bool ? "1" : "0").getBytes());
   }
 
   private void hashList(JSONArray list) throws NoSuchAlgorithmException,
@@ -158,6 +166,8 @@ public class ObjectHash implements Comparable<ObjectHash> {
       return JsonType.STRING;
     } else if (jsonObj instanceof Integer || jsonObj instanceof Long) {
       return JsonType.INT;
+    } else if (jsonObj instanceof Boolean) {
+      return JsonType.BOOLEAN;
     } else {
       LOG.log(Level.WARNING, "jsonObj is_a " + jsonObj.getClass());
       return JsonType.UNKNOWN;
@@ -166,22 +176,14 @@ public class ObjectHash implements Comparable<ObjectHash> {
 
   public static ObjectHash commonJsonHash(String json)
       throws JSONException, NoSuchAlgorithmException {
-    // TODO(phad): this.
+    // TODO(phad): implement 'commonizing' of JSON values.
     return new ObjectHash();
   }
 
   public static ObjectHash pythonJsonHash(String json)
       throws JSONException, NoSuchAlgorithmException {
-    // TODO(phad): this.
     JSONTokener tokener = new JSONTokener(json);
     Object outerValue = tokener.nextValue();
-    JsonType outerType = getType(outerValue);
-    // TODO(phad): maybe we don't need to make this check.  But it seems that
-    // org.json.JSONTokener is quite happy to parse illegal JSON docs such as
-    // 'none', '"string"', etc.
-    if (outerType != JsonType.ARRAY && outerType != JsonType.OBJECT) {
-      throw new JSONException("Illegal outer type in JSON: " + outerType);
-    }
     ObjectHash h = new ObjectHash();
     h.hashAny(outerValue);
     return h;
