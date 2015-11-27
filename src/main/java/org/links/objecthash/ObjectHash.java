@@ -68,7 +68,10 @@ public class ObjectHash implements Comparable<ObjectHash> {
         hashBoolean((Boolean) obj);
         break;
       }
-      // TODO(phad): types FLOAT
+      case FLOAT: {
+        hashDouble((Double) obj);
+        break;
+      }
       default: {
         throw new IllegalArgumentException("Illegal type in JSON: "
                                            + obj.getClass());
@@ -92,6 +95,11 @@ public class ObjectHash implements Comparable<ObjectHash> {
   private void hashInteger(Object value) throws NoSuchAlgorithmException {
     String str = value.toString();
     hashTaggedBytes('i', str.getBytes());
+  }
+
+  private void hashDouble(Double value) throws NoSuchAlgorithmException {
+    String normalized = normalizeFloat(value);
+    hashTaggedBytes('f', normalized.getBytes());
   }
 
   private void hashNull() throws NoSuchAlgorithmException {
@@ -166,6 +174,8 @@ public class ObjectHash implements Comparable<ObjectHash> {
       return JsonType.STRING;
     } else if (jsonObj instanceof Integer || jsonObj instanceof Long) {
       return JsonType.INT;
+    } else if (jsonObj instanceof Double) {
+      return JsonType.FLOAT;
     } else if (jsonObj instanceof Boolean) {
       return JsonType.BOOLEAN;
     } else {
@@ -223,5 +233,45 @@ public class ObjectHash implements Comparable<ObjectHash> {
 
   public String toHex() {
     return toHex(hash);
+  }
+
+  static String normalizeFloat(double f) {
+    // Early out for zero.
+    if (f == 0.0) {
+      return "+0:";
+    }
+    StringBuffer sb = new StringBuffer();
+    // Sign
+    sb.append(f < 0.0 ? '-' : '+');
+    if (f < 0.0) f = -f;
+    // Exponent
+    int e = 0;
+    while (f > 1) {
+      f /= 2;
+      e += 1;
+    }
+    while (f < 0.5) {
+      f *= 2;
+      e -= 1;
+    }
+    sb.append(e);
+    sb.append(':');
+    // Mantissa
+    if (f > 1 || f <= 0.5) {
+      throw new IllegalStateException("wrong range for mantissa");
+    }
+    while (f != 0) {
+      if (f >= 1) {
+        sb.append('1');
+        f -= 1;
+      } else {
+        sb.append('0');
+      }
+      if (f >= 1) {
+        throw new IllegalStateException("oops, f is too big");
+      }
+      f *= 2;
+    }
+    return sb.toString();
   }
 }

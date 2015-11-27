@@ -3,10 +3,21 @@ package org.links.objecthash;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
+import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.FileSystems;
+import java.nio.file.Path;
+import java.util.Iterator;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import org.json.JSONException;
 import org.junit.Test;
 
 public class ObjectHashTest {
+  private static final Logger LOG = Logger.getLogger(ObjectHashTest.class.getName());
+  private static final String GOLDEN_JSON_FILENAME = "common_json.test";
 
   private void runTest(String json, String expectedHash) throws Exception {
     ObjectHash r = ObjectHash.pythonJsonHash(json);
@@ -79,6 +90,45 @@ public class ObjectHashTest {
         "7dc96f776c8423e57a2785489a3f9c43fb6e756876d6ad9a9cac4aa4e72ec193");
     runTest("false",
         "c02c0b965e023abee808f2b548d8d5193a8b5229be6f3121a6f16e2d41a449b3");
+  }
+
+  @Test
+  public void testGolden() throws Exception {
+    List<String> lines = Files.readAllLines(
+        FileSystems.getDefault().getPath(GOLDEN_JSON_FILENAME),
+        Charset.forName("UTF-8"));
+    Iterator<String> iter = lines.iterator();
+    while (iter.hasNext()) {
+      String line;
+      do {
+        line = iter.next();
+      } while (line.isEmpty() || line.startsWith("#"));
+      String json = line;
+      if (!iter.hasNext()) break;
+      String hash = iter.next();
+      // TODO(phad): remove this when key-order-independence is done.
+      if (json.contains("k1"))
+        continue;
+      LOG.info("Testing JSON: " + json);
+      runTest(json, hash);
+    }
+  }
+
+  @Test
+  public void testFloatNormalization() throws Exception {
+    Double[] testValues = {
+        1.0, 1.5, 2.0, 1000.0, 0.0001, -23.1234
+    };
+    String[] expectedNormalizations = {
+        "+0:1", "+1:011", "+1:1", "+10:01111101",
+        "+-13:011010001101101110001011101011000111000100001100101101",
+        "-5:010111000111111001011100100100011101000101001110001111"
+    };
+    assertEquals(testValues.length, expectedNormalizations.length);
+    for (int idx = 0; idx < testValues.length; ++idx) {
+      assertEquals(expectedNormalizations[idx],
+                   ObjectHash.normalizeFloat(testValues[idx]));
+    }
   }
 
   private final static String[] BAD_JSONS = { "", "[", "]", "{", "}" };
