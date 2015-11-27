@@ -179,8 +179,7 @@ def common_json_hash(j):
 def redactize_unicode(u):
     if u.startswith('**REDACTED**'):
         return Redacted(u[12:])
-    else:
-        return u
+    return u
 
 redactize = ApplyToLeaves(redactize_unicode, (str, unicode))
 
