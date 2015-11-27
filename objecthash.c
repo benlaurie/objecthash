@@ -62,8 +62,13 @@ static int dict_comp(const void *a, const void *b) {
   return memcmp(a, b, 2 * sizeof(hash));
 }
 
-bool object_hash_str(const char *str, size_t len, byte hash[HASH_SIZE]) {
+static bool object_hash_str(const char *str, size_t len, byte hash[HASH_SIZE]) {
   hash_bytes('u', (const byte *)str, len, hash);
+  return true;
+}
+
+static bool object_hash_bool(bool b, hash h) {
+  hash_bytes('b', (byte *)(b ? "1" : "0"), 1, h);
   return true;
 }
 
@@ -179,7 +184,7 @@ bool object_hash(/*const*/ json_object *j, byte hash[HASH_SIZE]) {
   type = json_object_get_type(j);
   switch (type) {
   case json_type_boolean:
-    assert(false);
+    return object_hash_bool(json_object_get_boolean(j), hash);
   case json_type_double:
     return object_hash_float(json_object_get_double(j), hash);
   case json_type_int:
