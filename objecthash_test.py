@@ -42,14 +42,14 @@ class TestCommonJSONHash(unittest.TestCase):
                     'acac86c0e609ca906f632b0e2dacccb2b77d22b0621f20ebece1a4835b93f6f0')
         self.verify('["foo"]',
                     '268bc27d4974d9d576222e4cdbb8f7c6bd6791894098645a19eeca9c102d0964')
+        self.verify('["foo", "bar"]',
+                    '32ae896c413cfdc79eec68be9139c86ded8b279238467c216cf2bec4d5f1e4a2')
         self.verify('{}',
                     '18ac3e7343f016890c510e93f935261169d9e3f565436429830faf0934f4f8e4')
         self.verify('{"foo": "bar"}',
                     '7ef5237c3027d6c58100afadf37796b3d351025cf28038280147d42fdc53b960')
         self.verify('{"foo": ["bar", "baz"], "qux": ["norf"]}',
                     'f1a9389f27558538a064f3cc250f8686a0cebb85f1cab7f4d4dcc416ceda3c92');
-        self.verify('["foo", "bar"]',
-                    '32ae896c413cfdc79eec68be9139c86ded8b279238467c216cf2bec4d5f1e4a2')
 
     def test_float_and_int(self):
         self.verify('["foo", {"bar":["baz", null, 1.0, 1.5, 0.0001, 1000.0, 2.0, -23.1234, 2.0]}]',
