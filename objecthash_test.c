@@ -36,8 +36,26 @@ static void run_test(const char * const json, const char * const h) {
 }
 
 int main(int argc, char **argv) {
-  run_test("[]",
-     "acac86c0e609ca906f632b0e2dacccb2b77d22b0621f20ebece1a4835b93f6f0");
+  FILE *f = fopen("common_json.test", "r");
+  assert(f);
+  for (;;) {
+    char json[1024];
+    const char *r;
+    for (;;) {
+      r = fgets(json, sizeof json, f);
+      if (r == NULL || r[0] != '#')
+	break;
+    }
+    if (r == NULL)
+      break;
+    size_t jl = strlen(json);
+    assert(jl > 0 && json[jl - 1] == '\n');
+    char h[2 * HASH_SIZE + 2];  // hash in hex, \n, \0
+    assert(fgets(h, sizeof h, f) != NULL);
+    assert(strlen(h) == 2 * HASH_SIZE + 1);
+    assert(h[2 * HASH_SIZE] == '\n');
+    run_test(json, h);
+  }
   run_test("[\"foo\"]",
      "268bc27d4974d9d576222e4cdbb8f7c6bd6791894098645a19eeca9c102d0964");
   run_test("[\"foo\", \"bar\"]",

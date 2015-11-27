@@ -36,10 +36,22 @@ class TestCommonJSONHash(unittest.TestCase):
     def verify(self, j, e):
         h = objecthash.common_json_hash(j)
         self.assertEqual(hexify(h), e)
+
+    def test_golden(self):
+        with open('common_json.test') as f:
+            while True:
+                while True:
+                    j = f.readline()
+                    if not j.startswith('#'):
+                        break
+                if not j:
+                    break
+                h = f.readline()
+                if h.endswith('\n'):
+                    h = h[:-1]
+                self.verify(j, h)
         
     def test_common(self):
-        self.verify('[]',
-                    'acac86c0e609ca906f632b0e2dacccb2b77d22b0621f20ebece1a4835b93f6f0')
         self.verify('["foo"]',
                     '268bc27d4974d9d576222e4cdbb8f7c6bd6791894098645a19eeca9c102d0964')
         self.verify('["foo", "bar"]',
