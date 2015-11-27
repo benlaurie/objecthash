@@ -9,14 +9,14 @@ class TestUnicode(unittest.TestCase):
         u1n = u"\u03d3"
         u1d = u"\u03d2\u0301"
         self.assertNotEqual(u1n, u1d)
-        n1n = objecthash.unicode_normalizify(u1n)
-        n1d = objecthash.unicode_normalizify(u1d)
+        n1n = objecthash.unicode_normalize(u1n)
+        n1d = objecthash.unicode_normalize(u1d)
         self.assertEqual(n1n, n1d)
         s1n = set((u1n,))
         s1d = set((u1n, u1d))
         self.assertNotEqual(s1n, s1d)
-        ns1n  = objecthash.unicode_normalizify(s1n)
-        ns1d  = objecthash.unicode_normalizify(s1d)
+        ns1n  = objecthash.unicode_normalize(s1n)
+        ns1d  = objecthash.unicode_normalize(s1d)
         self.assertEqual(ns1n, ns1d)
         l1n1 = [u1n]
         l1n2 = [u1n, u1n]
@@ -24,9 +24,9 @@ class TestUnicode(unittest.TestCase):
         self.assertNotEqual(l1n1, l1n2)
         self.assertNotEqual(l1n1, l1d)
         self.assertNotEqual(l1n2, l1d)
-        nl1n1 = objecthash.unicode_normalizify(l1n1)
-        nl1n2 = objecthash.unicode_normalizify(l1n2)
-        nl1d = objecthash.unicode_normalizify(l1d)
+        nl1n1 = objecthash.unicode_normalize(l1n1)
+        nl1n2 = objecthash.unicode_normalize(l1n2)
+        nl1d = objecthash.unicode_normalize(l1d)
         self.assertNotEqual(nl1n1, nl1n2)
         self.assertNotEqual(nl1n1, nl1d)
         self.assertEqual(nl1n2, nl1d)

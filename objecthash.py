@@ -43,7 +43,7 @@ def obj_hash_list(l):
         h += obj_hash(o)
     return hash_primitive('l', h)
 
-def unicode_normalize(u):
+def _unicode_normalize(u):
     return unicodedata.normalize('NFC', u).encode('utf-8')
 
 def obj_hash_dict(d):
@@ -54,7 +54,7 @@ def obj_hash_dict(d):
     return hash_primitive('d', h)
 
 def obj_hash_unicode(u):
-    return hash_primitive('u', unicode_normalize(u))
+    return hash_primitive('u', _unicode_normalize(u))
 
 def float_normalize(f):
     # special case 0
@@ -243,9 +243,8 @@ def unredactable(o):
 
 def unicode_normalize_entity(e):
     if type(e) is unicode:
-        return unicode_normalize(e)
-    elif type(e) is str:
-        return unicode_normalize(unicode(e))
-    return e
+        return _unicode_normalize(e)
+    assert type(e) is str
+    return _unicode_normalize(unicode(e))
 
-unicode_normalizify = ApplyToLeaves(unicode_normalize_entity)
+unicode_normalize = ApplyToLeaves(unicode_normalize_entity, (str, unicode))
