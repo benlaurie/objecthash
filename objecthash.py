@@ -142,40 +142,8 @@ def python_json_hash(j):
     t = json.loads(j)
     return obj_hash(t)
 
-def commonize_list(l):
-    return [commonize(e) for e in l]
-
-def commonize_dict(d):
-    return {commonize(k): commonize(v) for (k, v) in d.items()}
-
-def commonize(o):
-    if type(o) is list:
-        return commonize_list(o)
-    elif type(o) is dict:
-        return commonize_dict(o)
-    elif type(o) is unicode:
-        return o
-    elif type(o) is float:
-        return o
-    elif type(o) is int:
-        return float(o)
-    elif type(o) is str:
-        return o
-    elif type(o) is bool:
-        return o
-    elif o is None:
-        return o
-
-    print type(o)
-    assert False
-
-def common_json_hash(j):
-    t = json.loads(j)
-    t = commonize(t)
-    return obj_hash(t)
-
 def is_primitive_type(t):
-    return t is str or t is unicode or t is float or t is int or t is types.NoneType
+    return t is str or t is unicode or t is float or t is int or t is bool or t is types.NoneType
 
 class ApplyToLeaves(object):
     def __init__(self, leaf_fn, restrict = None):
@@ -201,6 +169,13 @@ class ApplyToLeaves(object):
 
         print type(o)
         assert False
+
+commonize = ApplyToLeaves(lambda o: float(o), (int,))
+
+def common_json_hash(j):
+    t = json.loads(j)
+    t = commonize(t)
+    return obj_hash(t)
 
 def redactize_unicode(u):
     if u.startswith('**REDACTED**'):
