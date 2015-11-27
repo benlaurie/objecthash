@@ -160,9 +160,8 @@ class ApplyToLeaves(object):
             return set([self(e) for e in o])
         elif is_primitive_type(t):
             if self.restrict:
-                for tt in self.restrict:
-                    if t is tt:
-                        return self.leaf_fn(o)
+                if t in self.restrict:
+                    return self.leaf_fn(o)
                 return o
             else:
                 return self.leaf_fn(o)
