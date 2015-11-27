@@ -178,8 +178,9 @@ def is_primitive_type(t):
     return t is str or t is unicode or t is float or t is int or t is types.NoneType
 
 class ApplyToLeaves(object):
-    def __init__(self, leaf_fn):
+    def __init__(self, leaf_fn, restrict = None):
         self.leaf_fn = leaf_fn
+        self.restrict = restrict
 
     def __call__(self, o):
         t = type(o)
@@ -190,18 +191,24 @@ class ApplyToLeaves(object):
         elif t is set:
             return set([self(e) for e in o])
         elif is_primitive_type(t):
-            return self.leaf_fn(o)
+            if self.restrict:
+                for tt in self.restrict:
+                    if t is tt:
+                        return self.leaf_fn(o)
+                return o
+            else:
+                return self.leaf_fn(o)
 
         print type(o)
         assert False
 
 def redactize_unicode(u):
-    if (type(u) is str or type(u) is unicode) and u.startswith('**REDACTED**'):
+    if u.startswith('**REDACTED**'):
         return Redacted(u[12:])
     else:
         return u
 
-redactize = ApplyToLeaves(redactize_unicode)
+redactize = ApplyToLeaves(redactize_unicode, (str, unicode))
 
 def common_redacted_json_hash(j):
     t = json.loads(j)
