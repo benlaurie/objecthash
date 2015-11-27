@@ -44,7 +44,7 @@ int main(int argc, char **argv) {
 	   "32ae896c413cfdc79eec68be9139c86ded8b279238467c216cf2bec4d5f1e4a2");
   run_test("{}",
      "18ac3e7343f016890c510e93f935261169d9e3f565436429830faf0934f4f8e4");
-  run_test("{\"foo\": \"bar\"}\"",
+  run_test("{\"foo\": \"bar\"}",
      "7ef5237c3027d6c58100afadf37796b3d351025cf28038280147d42fdc53b960");
   run_test("{\"foo\": [\"bar\", \"baz\"], \"qux\": [\"norf\"]}",
      "f1a9389f27558538a064f3cc250f8686a0cebb85f1cab7f4d4dcc416ceda3c92");
