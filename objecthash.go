@@ -139,6 +139,14 @@ func hashInt(i int) [hashLength]byte {
 	return hash(`i`, []byte(fmt.Sprintf("%d", i)))
 }
 
+func hashBool(b bool) [hashLength]byte {
+	bb := []byte(`0`)
+	if b {
+		bb = []byte(`1`)
+	}
+	return hash(`b`, bb)
+}
+
 func ObjectHash(o interface{}) [hashLength]byte {
 	switch v := o.(type) {
 	case []interface{}:
@@ -155,6 +163,8 @@ func ObjectHash(o interface{}) [hashLength]byte {
 		return hashInt(v)
 	case Set:
 		return hashSet(v)
+	case bool:
+		return hashBool(v)
 	default:
 		panic(o)
 	}
