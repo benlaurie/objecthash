@@ -34,30 +34,6 @@ static void hash_bytes(const byte t, const byte * const b, const size_t l,
   hash_final(&ctx, hash);
 }
 
-/*
-static void print_json_value(json_object *jobj) {
-  enum json_type type;
-  type = json_object_get_type(jobj);
-  printf("type: %d",type);
-  switch (type) {
-  case json_type_boolean: printf("json_type_boolean\n");
-    printf("value: %s\n", json_object_get_boolean(jobj)? "true": "false");
-    break;
-  case json_type_double: printf("json_type_double\n");
-    printf("          value: %lf\n", json_object_get_double(jobj));
-    break;
-  case json_type_int: printf("json_type_int\n");
-    printf("          value: %d\n", json_object_get_int(jobj));
-    break;
-  case json_type_string: printf("json_type_string\n");
-    printf("          value: %s\n", json_object_get_string(jobj));
-    break;
-  default:
-    printf("oops");
-  }
-}
-*/
-
 static int dict_comp(const void *a, const void *b) {
   return memcmp(a, b, 2 * sizeof(hash));
 }
