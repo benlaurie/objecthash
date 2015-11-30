@@ -298,6 +298,9 @@ public class ObjectHash implements Comparable<ObjectHash> {
       if (f >= 1) {
         throw new IllegalStateException("oops, f is too big");
       }
+      if (sb.length() > 1000) {
+        throw new IllegalStateException("things have got out of hand");
+      }
       f *= 2;
     }
     return sb.toString();
