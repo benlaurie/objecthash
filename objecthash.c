@@ -35,6 +35,7 @@ static void hash_bytes(const byte t, const byte * const b, const size_t l,
 }
 
 static int dict_comp(const void *a, const void *b) {
+  // note that this should always terminate in < sizeof(hash) anyway
   return memcmp(a, b, 2 * sizeof(hash));
 }
 
