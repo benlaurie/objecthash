@@ -9,7 +9,6 @@ import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.TreeSet;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.json.JSONArray;
@@ -48,7 +47,6 @@ public class ObjectHash implements Comparable<ObjectHash> {
                                           JSONException {
     digester.reset();
     JsonType outerType = getType(obj);
-    LOG.info("Next element: " + outerType);
     switch (outerType) {
       case ARRAY: {
         hashList((JSONArray) obj);
@@ -143,14 +141,8 @@ public class ObjectHash implements Comparable<ObjectHash> {
     Comparator<ByteBuffer> ordering = new Comparator<ByteBuffer>() {
         @Override
         public int compare(ByteBuffer left, ByteBuffer right) {
-          for (int idx = 0; idx < left.array().length; ++idx) {
-            if (left.array()[idx] < right.array()[idx]) {
-              return -1;
-            } else if (left.array()[idx] > right.array()[idx]) {
-              return 1;
-            }
-          }
-          return 0;
+          return ObjectHash.toHex(left.array()).compareTo(
+              ObjectHash.toHex(right.array()));
         }          
     };
     Iterator<String> keys = obj.keys();
@@ -166,9 +158,7 @@ public class ObjectHash implements Comparable<ObjectHash> {
       buff.put(hVal.hash());
       buffers.add(buff);
     }
-    LOG.info("Accumulated ByteBuffers: " + debugString(buffers));
     Collections.sort(buffers, ordering);
-    LOG.info("Sorted ByteBuffers: " + debugString(buffers));
     digester.reset();
     digester.update((byte) 'd');
     for (ByteBuffer buff : buffers) {
@@ -217,7 +207,7 @@ public class ObjectHash implements Comparable<ObjectHash> {
     } else if (jsonObj instanceof Boolean) {
       return JsonType.BOOLEAN;
     } else {
-      LOG.log(Level.WARNING, "jsonObj is_a " + jsonObj.getClass());
+      LOG.warning("jsonObj is_a " + jsonObj.getClass());
       return JsonType.UNKNOWN;
     }
   }
@@ -230,9 +220,6 @@ public class ObjectHash implements Comparable<ObjectHash> {
 
   public static ObjectHash pythonJsonHash(String json)
       throws JSONException, NoSuchAlgorithmException {
-    LOG.info("\n=============================================\n"
-             + "= JSON: " + json + "\n"
-             + "=============================================");
     ObjectHash h = new ObjectHash();
     h.hashAny(new JSONTokener(json).nextValue());
     return h;

@@ -106,7 +106,6 @@ public class ObjectHashTest {
       String json = line;
       if (!iter.hasNext()) break;
       String hash = iter.next();
-      LOG.info("Testing JSON: " + json);
       runTest(json, hash);
     }
   }
