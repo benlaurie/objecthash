@@ -1,11 +1,9 @@
-#include "crypto-algorithms/sha256.h"
+#include <stdbool.h>
+#include <openssl/sha.h>
 
 typedef unsigned char byte;
-typedef int bool;
 
-static const int true = 1;
-static const int false = 0;
-static const int HASH_SIZE = SHA256_BLOCK_SIZE;
+static const int HASH_SIZE = SHA256_DIGEST_LENGTH;
 
 typedef byte hash[HASH_SIZE];
 typedef SHA256_CTX hash_ctx;
