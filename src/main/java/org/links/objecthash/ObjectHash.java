@@ -141,9 +141,8 @@ public class ObjectHash implements Comparable<ObjectHash> {
     Comparator<ByteBuffer> ordering = new Comparator<ByteBuffer>() {
         @Override
         public int compare(ByteBuffer left, ByteBuffer right) {
-          return ObjectHash.toHex(left.array()).compareTo(
-              ObjectHash.toHex(right.array()));
-        }          
+          return toHex(left.array()).compareTo(toHex(right.array()));
+        }
     };
     Iterator<String> keys = obj.keys();
     while (keys.hasNext()) {
