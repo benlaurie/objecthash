@@ -1,4 +1,4 @@
-test: c go java python
+test: c go python java
 
 go:
 	GOPATH=`pwd` go test -v objecthash.go objecthash_test.go
