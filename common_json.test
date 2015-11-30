@@ -16,6 +16,10 @@ acac86c0e609ca906f632b0e2dacccb2b77d22b0621f20ebece1a4835b93f6f0
 {"foo": ["bar", "baz"], "qux": ["norf"]}
 f1a9389f27558538a064f3cc250f8686a0cebb85f1cab7f4d4dcc416ceda3c92
 
+# Null values
+[null]
+5fb858ed3ef4275e64c2d5c44b77534181f7722b7765288e76924ce2f9f7f7db
+
 # Boolean primitives
 true
 7dc96f776c8423e57a2785489a3f9c43fb6e756876d6ad9a9cac4aa4e72ec193
