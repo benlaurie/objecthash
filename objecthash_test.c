@@ -27,8 +27,18 @@ static void check_hash(const hash h1, const hash h2) {
 
 static void run_test(const char * const json, const char * const h) {
   hash r;
-  python_json_hash(json, r);
+  common_json_hash(json, r);
   
+  hash e;
+  a_to_hash(h, e);
+
+  check_hash(e, r);
+}
+
+static void run_py_test(const char * const json, const char * const h) {
+  hash r;
+  python_json_hash(json, r);
+
   hash e;
   a_to_hash(h, e);
 
@@ -56,10 +66,10 @@ int main(int argc, char **argv) {
     assert(h[2 * HASH_SIZE] == '\n');
     run_test(json, h);
   }
-  run_test("[\"foo\", {\"bar\": [\"baz\", null, 1.0, 1.5, 0.0001, 1000.0, 2.0, -23.1234, 2.0]}]",
-	   "783a423b094307bcb28d005bc2f026ff44204442ef3513585e7e73b66e3c2213");
-  run_test("[\"foo\", {\"bar\": [\"baz\", null, 1, 1.5, 0.0001, 1000, 2, -23.1234, 2]}]",
-	   "726e7ae9e3fadf8a2228bf33e505a63df8db1638fa4f21429673d387dbd1c52a");
+  run_py_test("[\"foo\", {\"bar\": [\"baz\", null, 1.0, 1.5, 0.0001, 1000.0, 2.0, -23.1234, 2.0]}]",
+	      "783a423b094307bcb28d005bc2f026ff44204442ef3513585e7e73b66e3c2213");
+  run_py_test("[\"foo\", {\"bar\": [\"baz\", null, 1, 1.5, 0.0001, 1000, 2, -23.1234, 2]}]",
+	      "726e7ae9e3fadf8a2228bf33e505a63df8db1638fa4f21429673d387dbd1c52a");
   
   puts("all tests passed");
   return 0;

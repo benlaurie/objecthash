@@ -131,12 +131,11 @@ static bool object_hash_float(const double d, hash h) {
   char buf[1000];
 
   float_normalize(d, buf);
-//  printf("%f: %s\n", d, buf);
   hash_bytes('f', (byte *)buf, strlen(buf), h);
   return true;
 }
 
-bool object_hash_list(json_object *l, hash h) {
+static bool object_hash_list(json_object *l, hash h) {
   hash_ctx ctx;
   hash_init(&ctx);
 
@@ -188,4 +187,57 @@ bool object_hash(/*const*/ json_object *j, byte hash[HASH_SIZE]) {
 bool python_json_hash(const char * const json, hash hash) {
     json_object * const j = json_tokener_parse(json);
     return object_hash(j, hash);
+}
+
+typedef json_object *leaf_fn(json_object *j);
+
+static json_object *apply_to_leaves(json_object *j, leaf_fn *fn) {
+  enum json_type type;
+  type = json_object_get_type(j);
+  switch (type) {
+  case json_type_boolean:
+  case json_type_double:
+  case json_type_int:
+  case json_type_null:
+  case json_type_string:
+    return fn(j);
+  case json_type_object: {
+    json_object *r = json_object_new_object();
+    json_object_object_foreach(j, key, val) {
+      json_object *k = json_object_new_string(key);
+      json_object *kk = fn(k);
+      json_object_put(k);
+      const char *kkk = json_object_get_string(kk);
+      json_object_object_add(r, kkk, apply_to_leaves(val, fn));
+      json_object_put(kk);
+    }
+    return r;
+  }
+  case json_type_array: {
+    json_object *r = json_object_new_array();
+    for (size_t n = 0; n < json_object_array_length(j); ++n) {
+      json_object_array_add(r, apply_to_leaves(json_object_array_get_idx(j, n),
+					       fn));
+    }
+    return r;
+  }
+  }
+  printf("type = %d\n", type);
+  assert(false);
+  return NULL;
+}
+
+static json_object *commonize_int(json_object *j) {
+  if (json_object_get_type(j) == json_type_int)
+    return json_object_new_double(json_object_get_int64(j));
+  return json_object_get(j);
+}
+
+json_object *commonize(json_object *j) {
+  return apply_to_leaves(j, commonize_int);
+}
+
+bool common_json_hash(const char * const json, hash hash) {
+    json_object * const j = json_tokener_parse(json);
+    return object_hash(commonize(j), hash);
 }
