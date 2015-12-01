@@ -7,13 +7,17 @@
 
 bool object_hash(/*const*/ json_object *j, byte hash[HASH_SIZE]);
 
-static void hash_init(hash_ctx * const c) {
-  SHA256_Init(c);
-}
-
 static void hash_update(hash_ctx * const c, const byte * const b,
                         const size_t l) {
   SHA256_Update(c, b, l);
+}
+
+static void hash_init(hash_ctx * const c, const byte t) {
+  SHA256_Init(c);
+  
+  byte b[1];
+  b[0] = t;
+  hash_update(c, b, 1);
 }
 
 static void hash_final(hash_ctx * const c, hash h) {
@@ -23,14 +27,8 @@ static void hash_final(hash_ctx * const c, hash h) {
 static void hash_bytes(const byte t, const byte * const b, const size_t l,
                        hash hash) {
   hash_ctx ctx;
-  hash_init(&ctx);
-
-  byte tt[1];
-  tt[0] = t;
-
-  hash_update(&ctx, tt, sizeof tt);
+  hash_init(&ctx, t);
   hash_update(&ctx, b, l);
-
   hash_final(&ctx, hash);
 }
 
@@ -137,11 +135,7 @@ static bool object_hash_float(const double d, hash h) {
 
 static bool object_hash_list(json_object *l, hash h) {
   hash_ctx ctx;
-  hash_init(&ctx);
-
-  byte c[1];
-  c[0] = 'l';
-  hash_update(&ctx, c, 1);
+  hash_init(&ctx, 'l');
 
   int len = json_object_array_length(l);
   for (int n = 0; n < len; ++n) {
