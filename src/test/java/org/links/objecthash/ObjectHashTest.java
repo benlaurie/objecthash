@@ -42,14 +42,6 @@ public class ObjectHashTest {
   }
 
   @Test
-  public void testBoolean() throws Exception {
-    runTest("true",
-        "7dc96f776c8423e57a2785489a3f9c43fb6e756876d6ad9a9cac4aa4e72ec193");
-    runTest("false",
-        "c02c0b965e023abee808f2b548d8d5193a8b5229be6f3121a6f16e2d41a449b3");
-  }
-
-  @Test
   public void testGolden() throws Exception {
     List<String> lines = Files.readAllLines(
         FileSystems.getDefault().getPath(GOLDEN_JSON_FILENAME),
