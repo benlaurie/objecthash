@@ -1,3 +1,6 @@
+CPPFLAGS ?= -I/usr/local/include
+LDFLAGS ?= -L/usr/local/lib
+
 test: c go python java
 
 go:
@@ -14,7 +17,7 @@ java:
 	sbt test
 
 objecthash_test: objecthash_test.c objecthash.c
-	cc -Wall -Werror -I/usr/local/include -o objecthash_test objecthash_test.c objecthash.c crypto-algorithms/sha256.c -L/usr/local/lib -ljson-c
+	$(CC) -Wall -Werror $(CPPFLAGS) -o objecthash_test objecthash_test.c objecthash.c $(LDFLAGS) -ljson-c -lcrypto
 
 get:
 	GOPATH=`pwd` go get golang.org/x/text/unicode/norm

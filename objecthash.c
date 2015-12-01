@@ -8,20 +8,20 @@
 bool object_hash(/*const*/ json_object *j, byte hash[HASH_SIZE]);
 
 static void hash_init(hash_ctx * const c) {
-  sha256_init(c);
+  SHA256_Init(c);
 }
 
 static void hash_update(hash_ctx * const c, const byte * const b,
-			const size_t l) {
-  sha256_update(c, b, l);
+                        const size_t l) {
+  SHA256_Update(c, b, l);
 }
 
 static void hash_final(hash_ctx * const c, hash h) {
-  sha256_final(c, h);
+  SHA256_Final(h, c);
 }
 
 static void hash_bytes(const byte t, const byte * const b, const size_t l,
-		       hash hash) {
+                       hash hash) {
   hash_ctx ctx;
   hash_init(&ctx);
 
@@ -58,14 +58,14 @@ static bool object_hash_dict(/*const*/ json_object * const d, hash h) {
     }
   }
   byte *hashes = alloca(2 * len * sizeof(hash));
-  
+
   size_t n = 0;
   json_object_object_foreach(d, key, val) {
     object_hash_str(key, strlen(key), &hashes[2 * n * sizeof(hash)]);
     object_hash(val, &hashes[(2 * n + 1) * sizeof(hash)]);
     ++n;
   }
-  
+
   qsort(hashes, len, 2 * sizeof(hash), dict_comp);
   hash_bytes('d', hashes, 2 * len * sizeof(hash), h);
   return true;
@@ -81,14 +81,14 @@ static bool object_hash_int(int64_t i, hash h) {
 
 static void float_normalize(double f, char out[1000]) {
   const char * const base = out;
-  
+
   // special case 0
   // Note that if we allowed f to end up > .5 or == 0, we'd get the same thing
   if (f == 0.0) {
     strcpy(out, "+0:");
     return;
   }
-  
+
   // sign
   *out = '+';
   if (f < 0) {
@@ -96,7 +96,7 @@ static void float_normalize(double f, char out[1000]) {
     f = -f;
   }
   ++out;
-  
+
   // exponent
   int e = 0;
   while (f > 1) {
@@ -142,7 +142,7 @@ static bool object_hash_list(json_object *l, hash h) {
   byte c[1];
   c[0] = 'l';
   hash_update(&ctx, c, 1);
-  
+
   int len = json_object_array_length(l);
   for (int n = 0; n < len; ++n) {
     byte ihash[HASH_SIZE];
@@ -179,7 +179,7 @@ bool object_hash(/*const*/ json_object *j, byte hash[HASH_SIZE]) {
   default:
     break;
   }
-  printf("type = %d\n", type);
+  printf("unknown type = %d\n", type);
   assert(false);
   return false;
 }
