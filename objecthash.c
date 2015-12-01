@@ -179,8 +179,8 @@ bool object_hash(/*const*/ json_object *j, byte hash[HASH_SIZE]) {
   default:
     break;
   }
-  //printf("type = %d\n", type);
-  //assert(false);
+  printf("unknown type = %d\n", type);
+  assert(false);
   return false;
 }
 
