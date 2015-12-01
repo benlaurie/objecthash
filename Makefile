@@ -1,5 +1,5 @@
 CPPFLAGS ?= -I/usr/local/include
-LDFLAGS ?= -L/usr/local/lib
+LDFLAGS += -L/usr/local/lib
 
 test: c go python java
 
