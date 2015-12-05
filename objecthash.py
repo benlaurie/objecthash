@@ -135,10 +135,6 @@ def obj_hash(o):
     print type(o)
     assert False
 
-def python_json_hash(j):
-    t = json.loads(j)
-    return obj_hash(t)
-
 def is_primitive_type(t):
     return t is str or t is unicode or t is float or t is int or t is bool or t is types.NoneType
 

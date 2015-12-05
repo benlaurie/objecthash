@@ -64,7 +64,8 @@ class TestCommonJSONHash(unittest.TestCase):
         
 class TestPythonJSONHash(unittest.TestCase):
     def verify(self, j, e):
-        h = objecthash.python_json_hash(j)
+        # json_hash with no modifiers is Python JSON Hash
+        h = objecthash.json_hash(j)
         self.assertEqual(hexify(h), e)
 
     def test_common(self):
