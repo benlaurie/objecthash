@@ -1,6 +1,3 @@
-CPPFLAGS ?= -I/usr/local/include
-LDFLAGS += -L/usr/local/lib
-
 test: c go python java
 
 go:
@@ -17,7 +14,7 @@ java:
 	sbt test
 
 objecthash_test: objecthash_test.c objecthash.c
-	$(CC) -Wall -Werror $(CPPFLAGS) -o objecthash_test objecthash_test.c objecthash.c $(LDFLAGS) -ljson-c -lcrypto
+	$(CC) -std=c99 -Wall -Werror -o objecthash_test objecthash_test.c objecthash.c -lcrypto `pkg-config --libs --cflags icu-uc json-c`
 
 get:
 	GOPATH=`pwd` go get golang.org/x/text/unicode/norm
