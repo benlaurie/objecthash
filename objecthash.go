@@ -6,7 +6,7 @@ import "encoding/json"
 import "fmt"
 import "sort"
 
-import "golang.org/x/text/unicode/norm"
+//import "golang.org/x/text/unicode/norm"
 
 const hashLength int = sha256.Size
 
@@ -61,7 +61,8 @@ func hashList(l []interface{}) [hashLength]byte {
 }
 
 func hashUnicode(s string) [hashLength]byte {
-	return hash(`u`, norm.NFC.Bytes([]byte(s)))
+	//return hash(`u`, norm.NFC.Bytes([]byte(s)))
+	return hash(`u`, []byte(s))
 }
 
 type hashEntry struct {

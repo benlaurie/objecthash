@@ -35,12 +35,7 @@ func ExampleCommonJSONHash_KeyOrderIndependence() {
 	// ddd65f1f7568269a30df7cafc26044537dc2f02a1a0d830da61762fc3e687057
 	// ddd65f1f7568269a30df7cafc26044537dc2f02a1a0d830da61762fc3e687057
 }
-
-func ExampleCommonJSONHash_Unicode() {
-	commonJSON(`"ԱԲաբ"`)
-	// Output: 2a2a4485a4e338d8df683971956b1090d2f5d33955a81ecaad1a75125f7a316c
-}
-
+/*
 func ExampleCommonJSONHash_UnicodeNormalisation() {
 	commonJSON("\"\u03d3\"")
 	commonJSON("\"\u03d2\u0301\"")
@@ -48,7 +43,7 @@ func ExampleCommonJSONHash_UnicodeNormalisation() {
 	// f72826713a01881404f34975447bd6edcb8de40b191dc57097ebf4f5417a554d
 	// f72826713a01881404f34975447bd6edcb8de40b191dc57097ebf4f5417a554d
 }
-
+*/
 func objectHash(o interface{}) {
 	fmt.Printf("%x\n", ObjectHash(o))
 }
