@@ -48,6 +48,9 @@ c02c0b965e023abee808f2b548d8d5193a8b5229be6f3121a6f16e2d41a449b3
 # Integers and floats are the same in common JSON
 ["foo", {"bar": ["baz", null, 1, 1.5, 0.0001, 1000, 2, -23.1234, 2]}]
 783a423b094307bcb28d005bc2f026ff44204442ef3513585e7e73b66e3c2213
+# changing just a key changes the hash
+["foo", {"b4r": ["baz", null, 1, 1.5, 0.0001, 1000, 2, -23.1234, 2]}]
+7e01f8b45da35386e4f9531ff1678147a215b8d2b1d047e690fd9ade6151e431
 
 # Test order independence
 {"k1": "v1", "k2": "v2", "k3": "v3"}

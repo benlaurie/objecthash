@@ -51,14 +51,6 @@ class TestCommonJSONHash(unittest.TestCase):
                     h = h[:-1]
                 self.verify(j, h)
         
-    def test_key_change(self):
-        self.verify('["foo", {"b4r":["baz", null, 1, 1.5, 0.0001, 1000, 2, -23.1234, 2]}]',
-                    '7e01f8b45da35386e4f9531ff1678147a215b8d2b1d047e690fd9ade6151e431')
-
-    def test_unicode(self):
-        self.verify(u'"ԱԲաբ"',
-                    '2a2a4485a4e338d8df683971956b1090d2f5d33955a81ecaad1a75125f7a316c')
-
     def test_unicode_normalisation(self):
         self.verify(u'"\u03d3"',
                     'f72826713a01881404f34975447bd6edcb8de40b191dc57097ebf4f5417a554d')
