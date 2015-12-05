@@ -51,13 +51,6 @@ class TestCommonJSONHash(unittest.TestCase):
                     h = h[:-1]
                 self.verify(j, h)
         
-    def test_float_and_int(self):
-        self.verify('["foo", {"bar":["baz", null, 1.0, 1.5, 0.0001, 1000.0, 2.0, -23.1234, 2.0]}]',
-                    '783a423b094307bcb28d005bc2f026ff44204442ef3513585e7e73b66e3c2213')
-        # Integers and floats are the same in common JSON
-        self.verify('["foo", {"bar":["baz", null, 1, 1.5, 0.0001, 1000, 2, -23.1234, 2]}]',
-                    '783a423b094307bcb28d005bc2f026ff44204442ef3513585e7e73b66e3c2213')
-
     def test_key_change(self):
         self.verify('["foo", {"b4r":["baz", null, 1, 1.5, 0.0001, 1000, 2, -23.1234, 2]}]',
                     '7e01f8b45da35386e4f9531ff1678147a215b8d2b1d047e690fd9ade6151e431')
