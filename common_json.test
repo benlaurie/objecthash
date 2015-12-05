@@ -50,5 +50,7 @@ ddd65f1f7568269a30df7cafc26044537dc2f02a1a0d830da61762fc3e687057
 2a2a4485a4e338d8df683971956b1090d2f5d33955a81ecaad1a75125f7a316c
 "\u03d3"
 f72826713a01881404f34975447bd6edcb8de40b191dc57097ebf4f5417a554d
+# Note that this is the same character as above, but hashes differently unless
+# unicode normalisation is applied
 "\u03d2\u0301"
 42d5b13fb064849a988a86eb7650a22881c0a9ecf77057a1b07ab0dad385889c
