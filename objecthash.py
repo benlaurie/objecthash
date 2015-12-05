@@ -168,10 +168,10 @@ class ApplyToLeaves(object):
 
 commonize = ApplyToLeaves(lambda o: float(o), (int,))
 
-def common_json_hash(j):
+def json_hash(j, fns=()):
     t = json.loads(j)
-    t = commonize(t)
-    t = unicode_normalize(t)
+    for f in fns:
+        t = f(t)
     return obj_hash(t)
 
 def redactize_unicode(u):

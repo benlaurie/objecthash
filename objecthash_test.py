@@ -33,8 +33,8 @@ class TestUnicode(unittest.TestCase):
 
 
 class TestCommonJSONHash(unittest.TestCase):
-    def verify(self, j, e):
-        h = objecthash.common_json_hash(j)
+    def verify(self, j, e, fns=()):
+        h = objecthash.json_hash(j, (objecthash.commonize,) + fns)
         self.assertEqual(hexify(h), e)
 
     def test_golden(self):
@@ -80,7 +80,11 @@ class TestCommonJSONHash(unittest.TestCase):
         self.verify(u'"\u03d3"',
                     'f72826713a01881404f34975447bd6edcb8de40b191dc57097ebf4f5417a554d')
         self.verify(u'"\u03d2\u0301"',
-                    'f72826713a01881404f34975447bd6edcb8de40b191dc57097ebf4f5417a554d')
+                    'f72826713a01881404f34975447bd6edcb8de40b191dc57097ebf4f5417a554d',
+                    (objecthash.unicode_normalize,))
+        # Different hash if not normalised
+        self.verify(u'"\u03d2\u0301"',
+                    '42d5b13fb064849a988a86eb7650a22881c0a9ecf77057a1b07ab0dad385889c')
         
         
 class TestPythonJSONHash(unittest.TestCase):
