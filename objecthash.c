@@ -3,6 +3,12 @@
 #include <stdio.h>
 #include <string.h>
 
+#include "unicode/utypes.h"
+#include "unicode/localpointer.h"
+#include "unicode/uset.h"
+#include "unicode/unorm2.h"
+#include "unicode/ustring.h"
+
 #include "objecthash.h"
 
 bool object_hash(/*const*/ json_object *j, byte hash[HASH_SIZE]);
@@ -232,6 +238,47 @@ json_object *commonize(json_object *j) {
 }
 
 bool common_json_hash(const char * const json, hash hash) {
-    json_object * const j = json_tokener_parse(json);
-    return object_hash(commonize(j), hash);
+  json_object * const j = json_tokener_parse(json);
+  return object_hash(commonize(j), hash);
+}
+
+static json_object *unicode_normalize_string(json_object *j) {
+  if (json_object_get_type(j) == json_type_string) {
+    const char *s = json_object_get_string(j);
+    UErrorCode err;
+    const UNormalizer2 *un = unorm2_getNFCInstance(&err);
+    assert(un);
+    assert(!err);
+    
+    int32_t length;
+    u_strFromUTF8(NULL, 0, &length, s, strlen(s), &err);
+    assert(!err);
+    
+    UChar *us = alloca(length * sizeof(UChar));
+    int32_t uslength;
+    u_strFromUTF8(us, length, &uslength, s, strlen(s), &err);
+    assert(!err);
+    
+    // FIXME: surely we can find out how long the result will be?
+    UChar *usn = alloca(uslength * 10 * sizeof(UChar));
+    int32_t usnlength = unorm2_normalize(un, us, uslength, usn, 10 * uslength,
+                                       &err);
+    assert(!err);
+    assert(usnlength <= uslength * 10);
+
+    int32_t n8length;
+    u_strToUTF8(NULL, 0, &n8length, usn, usnlength, &err);
+    assert(!err);
+
+    char *n8 = alloca(n8length);
+    u_strToUTF8(n8, n8length, &n8length, usn, usnlength, &err);
+    assert(!err);
+
+    return json_object_new_string(n8);
+  }
+  return json_object_get(j);
+}
+
+json_object *unicode_normalize(json_object *j) {
+  return apply_to_leaves(j, unicode_normalize_string);
 }
