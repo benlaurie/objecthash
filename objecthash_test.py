@@ -145,7 +145,8 @@ class TestRedaction(unittest.TestCase):
         self.assertEqual(hexify(h), e)
 
     def verify_json(self, o, e):
-        h = objecthash.common_redacted_json_hash(o)
+        h = objecthash.json_hash(o,
+                                 (objecthash.commonize, objecthash.redactize))
         self.assertEqual(hexify(h), e)
 
     def test_common(self):

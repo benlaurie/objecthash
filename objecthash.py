@@ -181,12 +181,6 @@ def redactize_unicode(u):
 
 redactize = ApplyToLeaves(redactize_unicode, (str, unicode))
 
-def common_redacted_json_hash(j):
-    t = json.loads(j)
-    t = commonize(t)
-    t = redactize(t)
-    return obj_hash(t)
-
 class ApplyToLeavesAndKeys(ApplyToLeaves):
     def __init__(self, leaf_fn, key_fn):
         ApplyToLeaves.__init__(self, leaf_fn)
