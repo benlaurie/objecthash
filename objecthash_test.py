@@ -51,16 +51,6 @@ class TestCommonJSONHash(unittest.TestCase):
                     h = h[:-1]
                 self.verify(j, h)
         
-    def test_int(self):
-        self.verify('[123]',
-                    '2e72db006266ed9cdaa353aa22b9213e8a3c69c838349437c06896b1b34cee36')
-        self.verify('[1, 2, 3]',
-                    '925d474ac71f6e8cb35dd951d123944f7cabc5cda9a043cf38cd638cc0158db0')
-        self.verify('[123456789012345]',
-                    'f446de5475e2f24c0a2b0cd87350927f0a2870d1bb9cbaa794e789806e4c0836')
-        self.verify('[123456789012345, 678901234567890]',
-                    'd4cca471f1c68f62fbc815b88effa7e52e79d110419a7c64c1ebb107b07f7f56')
-
     def test_float_and_int(self):
         self.verify('["foo", {"bar":["baz", null, 1.0, 1.5, 0.0001, 1000.0, 2.0, -23.1234, 2.0]}]',
                     '783a423b094307bcb28d005bc2f026ff44204442ef3513585e7e73b66e3c2213')
