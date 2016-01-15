@@ -1,6 +1,7 @@
 #include <alloca.h>
 #include <assert.h>
 #include <json-c/json.h>
+#include <inttypes.h>
 #include <stdio.h>
 #include <string.h>
 
@@ -79,7 +80,7 @@ static bool object_hash_dict(/*const*/ json_object * const d, hash h) {
 static bool object_hash_int(int64_t i, hash h) {
   char buf[100];
 
-  sprintf(buf, "%ld", i);
+  sprintf(buf, "%" PRId64, i);
   hash_bytes('i', (byte *)buf, strlen(buf), h);
   return true;
 }
