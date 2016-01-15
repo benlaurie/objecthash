@@ -21,7 +21,7 @@ static void hash_update(hash_ctx * const c, const byte * const b,
 
 static void hash_init(hash_ctx * const c, const byte t) {
   SHA256_Init(c);
-  
+
   byte b[1];
   b[0] = t;
   hash_update(c, b, 1);
@@ -250,16 +250,16 @@ static json_object *unicode_normalize_string(json_object *j) {
     const UNormalizer2 *un = unorm2_getNFCInstance(&err);
     assert(un);
     assert(!err);
-    
+
     int32_t length;
     u_strFromUTF8(NULL, 0, &length, s, strlen(s), &err);
     assert(!err);
-    
+
     UChar *us = alloca(length * sizeof(UChar));
     int32_t uslength;
     u_strFromUTF8(us, length, &uslength, s, strlen(s), &err);
     assert(!err);
-    
+
     // FIXME: surely we can find out how long the result will be?
     UChar *usn = alloca(uslength * 10 * sizeof(UChar));
     int32_t usnlength = unorm2_normalize(un, us, uslength, usn, 10 * uslength,
