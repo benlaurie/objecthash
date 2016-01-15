@@ -1,3 +1,4 @@
+#include <alloca.h>
 #include <assert.h>
 #include <json-c/json.h>
 #include <stdio.h>
