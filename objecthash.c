@@ -1,8 +1,8 @@
-#include <alloca.h>
 #include <assert.h>
 #include <json-c/json.h>
 #include <inttypes.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 
 #include "unicode/utypes.h"
