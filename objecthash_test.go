@@ -6,7 +6,8 @@ import "os"
 import "testing"
 
 func commonJSON(j string) {
-	fmt.Printf("%x\n", CommonJSONHash(j))
+	h, _ := CommonJSONHash([]byte(j))
+	fmt.Printf("%x\n", h)
 }
 
 func ExampleCommonJSONHash_Common() {
@@ -16,7 +17,7 @@ func ExampleCommonJSONHash_Common() {
 
 func ExampleCommonJSONHash_FloatAndInt() {
 	commonJSON(`["foo", {"bar":["baz", null, 1.0, 1.5, 0.0001, 1000.0, 2.0, -23.1234, 2.0]}]`)
-        // Integers and floats are the same in common JSON
+	// Integers and floats are the same in common JSON
 	commonJSON(`["foo", {"bar":["baz", null, 1, 1.5, 0.0001, 1000, 2, -23.1234, 2]}]`)
 	// Output:
 	// 783a423b094307bcb28d005bc2f026ff44204442ef3513585e7e73b66e3c2213
@@ -35,6 +36,7 @@ func ExampleCommonJSONHash_KeyOrderIndependence() {
 	// ddd65f1f7568269a30df7cafc26044537dc2f02a1a0d830da61762fc3e687057
 	// ddd65f1f7568269a30df7cafc26044537dc2f02a1a0d830da61762fc3e687057
 }
+
 /*
 func ExampleCommonJSONHash_UnicodeNormalisation() {
 	commonJSON("\"\u03d3\"")
@@ -45,7 +47,8 @@ func ExampleCommonJSONHash_UnicodeNormalisation() {
 }
 */
 func objectHash(o interface{}) {
-	fmt.Printf("%x\n", ObjectHash(o))
+	h, _ := ObjectHash(o)
+	fmt.Printf("%x\n", h)
 }
 
 func ExampleObjectHash_JSON() {
@@ -68,7 +71,7 @@ func ExampleObjectHash_JSON2() {
 }
 
 func ExampleObjectHash_Set() {
-        o := map[string]interface{}{`thing1`: map[string]interface{}{`thing2`: Set{1, 2, `s`}}, `thing3`: 1234.567 }
+	o := map[string]interface{}{`thing1`: map[string]interface{}{`thing2`: Set{1, 2, `s`}}, `thing3`: 1234.567}
 	objectHash(o)
 	// Output: 618cf0582d2e716a70e99c2f3079d74892fec335e3982eb926835967cb0c246c
 }
@@ -109,7 +112,8 @@ func TestGolden(t *testing.T) {
 			return
 		}
 		h := s.Text()
-		hh := fmt.Sprintf("%x", CommonJSONHash(j))
+		jh, _ := CommonJSONHash([]byte(j))
+		hh := fmt.Sprintf("%x", jh)
 		if h != hh {
 			t.Errorf("Got %s expected %s", hh, h)
 		}
