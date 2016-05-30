@@ -1,0 +1,39 @@
+AllCops:
+  TargetRubyVersion: 2.1
+  DisplayCopNames: true
+  Exclude:
+    - '**/*.pb.rb'
+#
+# Style
+#
+
+LineLength:
+  Max: 128
+
+Style/StringLiterals:
+  EnforcedStyle: double_quotes
+
+Style/SpaceBeforeFirstArg:
+  Enabled: false
+
+Style/ConditionalAssignment:
+  Enabled: false
+
+Style/ModuleFunction:
+  Enabled: false
+
+#
+# Metrics
+#
+
+Metrics/MethodLength:
+  Max: 50
+
+Metrics/AbcSize:
+  Max: 15
+
+Metrics/CyclomaticComplexity:
+  Max: 10
+
+Metrics/PerceivedComplexity:
+  Enabled: false
