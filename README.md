@@ -29,7 +29,7 @@ Or install it yourself as:
 ObjectHash can calculate a digest of object graphs composed of a constrained
 set of types. The following types are supported:
 
-* Booleans: `true`, `false, `nil`
+* Booleans: `true`, `false`, `nil`
 * Numerics: Fixnum, Float
 * Array
 * Hash
