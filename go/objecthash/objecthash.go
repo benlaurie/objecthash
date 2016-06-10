@@ -164,7 +164,7 @@ func ObjectHash(o interface{}) [hashLength]byte {
 	case bool:
 		return hashBool(v)
 	default:
-		panic(o)
+		panic(fmt.Sprintf("Unsupported type: %T", o))
 	}
 }
 
