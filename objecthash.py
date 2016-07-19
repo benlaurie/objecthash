@@ -1,9 +1,14 @@
 import json
 import hashlib
 import random
-import types
+import sys
 import unicodedata
-from binascii import hexlify as hexify, unhexlify as unhexify
+from binascii import unhexlify as unhexify
+
+
+if sys.version_info.major >= 3:
+    unicode = str
+
 
 def hash_fn():
     return hashlib.sha256()
@@ -35,33 +40,33 @@ class FrozenList(object):
         return len(self.l)
 
 def obj_hash_bool(b):
-    return hash_primitive('b', '1' if b else '0')
+    return hash_primitive(b'b', b'1' if b else b'0')
 
 def obj_hash_list(l):
-    h = ''
+    h = b''
     for o in l:
         h += obj_hash(o)
-    return hash_primitive('l', h)
+    return hash_primitive(b'l', h)
 
 def obj_hash_dict(d):
-    h = ''
+    h = b''
     kh = [obj_hash(k) + obj_hash(v) for (k, v) in d.items()]
     for v in sorted(kh):
         h += v
-    return hash_primitive('d', h)
+    return hash_primitive(b'd', h)
 
 def obj_hash_unicode(u):
-    return hash_primitive('u', u.encode('utf-8'))
+    return hash_primitive(b'u', u.encode('utf-8'))
 
 def float_normalize(f):
     # special case 0
     # Note that if we allowed f to end up > .5 or == 0, we'd get the same thing
     if f == 0.0:
-        return '+0:'
+        return b'+0:'
     # sign
-    s = '+'
+    s = b'+'
     if f < 0:
-        s = '-'
+        s = b'-'
         f = -f
     # exponent
     e = 0
@@ -71,16 +76,16 @@ def float_normalize(f):
     while f <= .5:
         f *= 2
         e -= 1
-    s += str(e) + ':'
+    s += str(e).encode() + b':'
     # mantissa
     assert f <= 1
     assert f > .5
     while f:
         if f >= 1:
-            s += '1'
+            s += b'1'
             f -= 1
         else:
-            s += '0'
+            s += b'0'
         assert f < 1
         assert len(s) < 1000
         f *= 2
@@ -88,19 +93,19 @@ def float_normalize(f):
     return s
 
 def obj_hash_float(f):
-    return hash_primitive('f', float_normalize(f))
+    return hash_primitive(b'f', float_normalize(f))
 
 def obj_hash_int(i):
-    return hash_primitive('i', str(i))
+    return hash_primitive(b'i', str(i).encode())
 
 def obj_hash_set(s):
     h = []
     for e in s:
         h.append(obj_hash(e))
-    r = ''
+    r = b''
     for t in sorted(h):
         r += t
-    return hash_primitive('s', r)
+    return hash_primitive(b's', r)
 
 class Redacted(object):
     def __init__(self, hash):
@@ -121,7 +126,7 @@ def obj_hash(o):
         return obj_hash_float(o)
     elif type(o) is int:
         return obj_hash_int(o)
-    elif type(o) is str:
+    elif type(o) is bytes:
         return obj_hash_unicode(unicode(o))
     elif type(o) is set or type(o) is frozenset:
         return obj_hash_set(o)
@@ -130,13 +135,13 @@ def obj_hash(o):
     elif isinstance(o, Redacted):
         return o.hash
     elif o is None:
-        return hash_primitive('n', '')
-    
-    print type(o)
+        return hash_primitive(b'n', b'')
+
+    print(type(o))
     assert False
 
 def is_primitive_type(t):
-    return t is str or t is unicode or t is float or t is int or t is bool or t is types.NoneType
+    return t is bytes or t is unicode or t is float or t is int or t is bool or t is type(None)
 
 class ApplyToLeaves(object):
     def __init__(self, leaf_fn, restrict = None):
@@ -159,7 +164,7 @@ class ApplyToLeaves(object):
             else:
                 return self.leaf_fn(o)
 
-        print type(o)
+        print(type(o))
         assert False
 
 commonize = ApplyToLeaves(lambda o: float(o), (int,))
@@ -175,7 +180,7 @@ def redactize_unicode(u):
         return Redacted(u[12:])
     return u
 
-redactize = ApplyToLeaves(redactize_unicode, (str, unicode))
+redactize = ApplyToLeaves(redactize_unicode, (bytes, unicode))
 
 class ApplyToLeavesAndKeys(ApplyToLeaves):
     def __init__(self, leaf_fn, key_fn):
@@ -194,10 +199,8 @@ def redactable_key(k):
     return redactable_rand() + k
 
 def redactable_rand():
-    r = ''
-    for x in range(32):
-        r += chr(random.SystemRandom().getrandbits(8))
-    return hexify(r)
+    r = random.SystemRandom().getrandbits(256)
+    return hex(r)
 
 redactable = ApplyToLeavesAndKeys(redactable_entity, redactable_key)
 
@@ -220,7 +223,7 @@ def _unicode_normalize(u):
 def unicode_normalize_entity(e):
     if type(e) is unicode:
         return _unicode_normalize(e)
-    assert type(e) is str
+    assert type(e) is bytes
     return _unicode_normalize(unicode(e))
 
-unicode_normalize = ApplyToLeaves(unicode_normalize_entity, (str, unicode))
+unicode_normalize = ApplyToLeaves(unicode_normalize_entity, (bytes, unicode))
