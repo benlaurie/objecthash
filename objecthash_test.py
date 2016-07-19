@@ -3,6 +3,7 @@
 import unittest
 import objecthash
 from binascii import hexlify as hexify
+from io import open
 
 class TestUnicode(unittest.TestCase):
     def test_normalisation(self):
@@ -38,7 +39,7 @@ class TestCommonJSONHash(unittest.TestCase):
         self.assertEqual(hexify(h), e)
 
     def test_golden(self):
-        with open('common_json.test') as f:
+        with open('common_json.test', encoding='utf-8') as f:
             while True:
                 while True:
                     j = f.readline()
