@@ -3,7 +3,7 @@ import hashlib
 import random
 import sys
 import unicodedata
-from binascii import unhexlify as unhexify
+from binascii import hexlify as hexify, unhexlify as unhexify
 
 
 if sys.version_info.major >= 3:
@@ -199,8 +199,8 @@ def redactable_key(k):
     return redactable_rand() + k
 
 def redactable_rand():
-    r = random.SystemRandom().getrandbits(256)
-    return hex(r)
+    r = bytearray((random.SystemRandom().getrandbits(8) for _ in range(32)))
+    return str(hexify(r))
 
 redactable = ApplyToLeavesAndKeys(redactable_entity, redactable_key)
 
