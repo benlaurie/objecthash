@@ -43,7 +43,7 @@ class ObjectHash
 
   # Compute the ObjectHash of the given object as hexadecimal
   def hexdigest(object)
-    digest(object).unpack("h*").first
+    digest(object).unpack("H*").first
   end
 
   private
