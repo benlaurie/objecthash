@@ -6,8 +6,6 @@ import "encoding/json"
 import "fmt"
 import "sort"
 
-//import "golang.org/x/text/unicode/norm"
-
 const hashLength int = sha256.Size
 
 func hash(t string, b []byte) [hashLength]byte {
@@ -17,9 +15,9 @@ func hash(t string, b []byte) [hashLength]byte {
 	return sha256.Sum256(buf.Bytes())
 }
 
+// Set represents an unordered, unduplicated list of objects.
 // FIXME: if What You Hash Is What You Get, then this needs to be safe
-// to use as a set.
-// Note: not actually safe to use as a set
+// to use as a set.  Note: not actually safe to use as a set
 type Set []interface{}
 
 type sortableHashes [][hashLength]byte
@@ -31,7 +29,7 @@ func (h sortableHashes) Less(i, j int) bool { return bytes.Compare(h[i][:], h[j]
 func hashSet(s Set) [hashLength]byte {
 	h := make([][hashLength]byte, len(s))
 	for n, e := range s {
-		h[n] = ObjectHash(e)
+		h[n] = objectHash(e)
 	}
 	sort.Sort(sortableHashes(h))
 	b := new(bytes.Buffer)
@@ -48,7 +46,7 @@ func hashSet(s Set) [hashLength]byte {
 func hashList(l []interface{}) [hashLength]byte {
 	h := new(bytes.Buffer)
 	for _, o := range l {
-		b := ObjectHash(o)
+		b := objectHash(o)
 		h.Write(b[:])
 	}
 	return hash(`l`, h.Bytes())
@@ -76,8 +74,8 @@ func hashDict(d map[string]interface{}) [hashLength]byte {
 	e := make([]hashEntry, len(d))
 	n := 0
 	for k, v := range d {
-		e[n].khash = ObjectHash(k)
-		e[n].vhash = ObjectHash(v)
+		e[n].khash = objectHash(k)
+		e[n].vhash = objectHash(v)
 		n++
 	}
 	sort.Sort(byKHash(e))
@@ -114,7 +112,7 @@ func floatNormalize(f float64) (s string) {
 	for f != 0 {
 		if f >= 1 {
 			s += `1`
-			f -= 1
+			f--
 		} else {
 			s += `0`
 		}
@@ -145,7 +143,9 @@ func hashBool(b bool) [hashLength]byte {
 	return hash(`b`, bb)
 }
 
-func ObjectHash(o interface{}) [hashLength]byte {
+// objectHash computes the ObjectHash of a unmarshaled JSON object.
+// This is a specific subset of allowed Go objects.
+func objectHash(o interface{}) [hashLength]byte {
 	switch v := o.(type) {
 	case []interface{}:
 		return hashList(v)
@@ -168,10 +168,20 @@ func ObjectHash(o interface{}) [hashLength]byte {
 	}
 }
 
+// ObjectHash returns the hash of an arbirary Go object.
+func ObjectHash(obj interface{}) [hashLength]byte {
+	jsonObj, err := json.Marshal(obj)
+	if err != nil {
+		panic(fmt.Sprintf("Marshaling error: %v", err))
+	}
+	return CommonJSONHash(string(jsonObj))
+}
+
+// CommonJSONHash computes the ObjectHash of a JSON object.
 func CommonJSONHash(j string) [hashLength]byte {
 	var f interface{}
 	if err := json.Unmarshal([]byte(j), &f); err != nil {
 		panic(err)
 	}
-	return ObjectHash(f)
+	return objectHash(f)
 }
