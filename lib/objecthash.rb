@@ -12,13 +12,13 @@ class ObjectHash
   DEFAULT_HASH_ALGORITHM = Digest::SHA256
 
   # Compute a raw ObjectHash digest using the default algorithm
-  def self.digest(object)
-    new.digest(object)
+  def self.digest(object, normalize: true)
+    new.digest(object, normalize: normalize)
   end
 
   # Compute an hex ObjectHash digest using the default algorithm
-  def self.hexdigest(object)
-    new.hexdigest(object)
+  def self.hexdigest(object, normalize: true)
+    new.hexdigest(object, normalize: normalize)
   end
 
   def initialize(hash_algorithm = DEFAULT_HASH_ALGORITHM)
@@ -26,12 +26,12 @@ class ObjectHash
   end
 
   # Compute the ObjectHash of the given object
-  def digest(object)
+  def digest(object, normalize: true)
     case object
     when Array       then obj_hash_list(object)
     when Hash        then obj_hash_dict(object)
-    when String      then obj_hash_unicode(object)
-    when Symbol      then obj_hash_unicode(object.to_s)
+    when String      then obj_hash_unicode(object, normalize)
+    when Symbol      then obj_hash_unicode(object.to_s, normalize)
     when Float       then obj_hash_float(object)
     when Fixnum      then obj_hash_int(object)
     when Set         then obj_hash_set(object)
@@ -42,8 +42,8 @@ class ObjectHash
   end
 
   # Compute the ObjectHash of the given object as hexadecimal
-  def hexdigest(object)
-    digest(object).unpack("H*").first
+  def hexdigest(object, normalize: true)
+    digest(object, normalize: normalize).unpack("H*").first
   end
 
   private
@@ -69,8 +69,12 @@ class ObjectHash
     hash_primitive("d", h)
   end
 
-  def obj_hash_unicode(u)
-    hash_primitive("u", u.encode("utf-8"))
+  # Takes a unicode string and a boolean to indicate
+  # whether to normalize unicode or not.
+  def obj_hash_unicode(u, n)
+    u_enc = u.encode("utf-8")
+    u_norm = n ? u_enc.unicode_normalize(:nfc) : u_enc
+    hash_primitive("u", u_norm)
   end
 
   # rubocop:disable Metrics/AbcSize
