@@ -40,7 +40,8 @@ The `#digest` and `#hexdigest` methods are available on ObjectHash:
 
 Please note that Strings have [Unicode normalization](http://ruby-doc.org/stdlib-2.2.0/libdoc/unicode_normalize/rdoc/String.html) applied to them by default.
 You can disable this if desired by passing in the `normalize: false` keyword
-argument to `#digest` or `#hexdigest`.
+argument to `#digest` or `#hexdigest`. `String#unicode_normalize` was added in
+MRI Ruby v2.2.0 and that is the minimum supported version for ObjectHash.
 
 ```ruby
 >> ObjectHash.hexdigest("Hello, Ruby!")
