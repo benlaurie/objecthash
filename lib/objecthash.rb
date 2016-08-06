@@ -110,7 +110,7 @@ class ObjectHash
     raise unless f <= 1
     raise unless f > 0.5
 
-    while f
+    while f != 0.0
       if f >= 1
         s += "1"
         f -= 1
