@@ -65,7 +65,6 @@ For compatibility reasons it's recommended you use the default hash algorithm (S
 
 ## TODO
 
-* Adapt better tests from upstream objecthash_test.py
 * Redaction support
 
 ## Contributing
