@@ -28,19 +28,16 @@ RSpec.describe ObjectHash do
       expect(described_class.hexdigest(JSON.parse('{"foo": ["bar", "baz"], "qux": ["norf"]}'))).to eq "f1a9389f27558538a064f3cc250f8686a0cebb85f1cab7f4d4dcc416ceda3c92"
     end
 
-    # FIXME : FAILS ON FLOAT NORMALIZE
-    xit "with a mixture of all types" do
+    it "with a mixture of all types" do
       expect(described_class.hexdigest(JSON.parse('["foo", {"bar": ["baz", null, 1.0, 1.5, 0.0001, 1000.0, 2.0, -23.1234, 2.0]}]'))).to eq "783a423b094307bcb28d005bc2f026ff44204442ef3513585e7e73b66e3c2213"
     end
 
-    # FIXME : FAILS ON FLOAT NORMALIZE
-    xit "with a mixture of Strings, Integers, Floats, and null" do
+    it "with a mixture of Strings, Integers, Floats, and null" do
       expect(described_class.hexdigest(JSON.parse('["foo", {"bar": ["baz", null, 1, 1.5, 0.0001, 1000, 2, -23.1234, 2]}]'))).to eq "726e7ae9e3fadf8a2228bf33e505a63df8db1638fa4f21429673d387dbd1c52a"
     end
 
-    # FIXME : FAILS ON FLOAT NORMALIZE
-    xit "with a mixture of Strings, Integers, Floats, null, with a changed key name" do
-      expect(described_class.hexdigest(JSON.parse('["foo", {"b4r": ["baz", null, 1, 1.5, 0.0001, 1000, 2, -23.1234, 2]}]'))).to eq "7e01f8b45da35386e4f9531ff1678147a215b8d2b1d047e690fd9ade6151e431"
+    it "with a mixture of Strings, Integers, Floats, null, with a changed key name" do
+      expect(described_class.hexdigest(JSON.parse('["foo", {"b4r": ["baz", null, 1, 1.5, 0.0001, 1000, 2, -23.1234, 2]}]'))).to eq "ea590d3d54c53c6d285bffe38f860ce8776d100a145240cc820d08e1a26b15c8"
     end
 
     it "with a mixture of Strings, Integers, and null" do
@@ -134,8 +131,7 @@ RSpec.describe ObjectHash do
         expect(described_class.hexdigest([1, 2, 3])).to eq "157bf16c70bd4c9673ffb5030552df0ee2c40282042ccdf6167850edc9044ab7"
       end
 
-      # FIXME : FAILS ON FLOAT NORMALIZE
-      xit "calculates an Array of Floats" do
+      it "calculates an Array of Floats" do
         expect(described_class.hexdigest([1.01, 2.01, 3.01])).to eq "9d8a79a15670f3b38dd37db59d93927337e61a46f3d412ad1cc6e38826eaf74c"
       end
 
@@ -161,8 +157,7 @@ RSpec.describe ObjectHash do
         expect(described_class.hexdigest(foo: 1)).to eq "bf4c58f5e308e31e2cd64bdbf7a01b9b595a13602438be5e912c7d94f6d8177a"
       end
 
-      # FIXME : FAILS ON FLOAT NORMALIZE
-      xit "calculates a Hash with an Float value" do
+      it "calculates a Hash with an Float value" do
         expect(described_class.hexdigest(foo: 1.01)).to eq "e49f310ffc2fb04b1d5e8943cbeb17e62057f2edba2dab604e92d8c6acb2bb65"
       end
 
@@ -210,16 +205,15 @@ RSpec.describe ObjectHash do
       end
     end
 
-    # FIXME : COMMENTED SPECS FAIL ON FLOAT NORMALIZE
     context "Floats" do
       it "calculates the hash of common floats" do
-        # expect(described_class.hexdigest(-1.0)).to eq "f706daa44d7e40e21ea202c36119057924bb28a49949d8ddaa9c8c3c9367e602"
+        expect(described_class.hexdigest(-1.0)).to eq "f706daa44d7e40e21ea202c36119057924bb28a49949d8ddaa9c8c3c9367e602"
         expect(described_class.hexdigest(0.0)).to eq "60101d8c9cb988411468e38909571f357daa67bff5a7b0a3f9ae295cd4aba33d"
-        # expect(described_class.hexdigest(0.001)).to eq "47fe626453d51b9419d7e15d9b006b2263a9287c28a35d080cd949609a6c472d"
-        # expect(described_class.hexdigest(10.0)).to eq "084cfc7219e4163b67f2f9d00f03b50f1c7bdfce48c2b90276ff6784f6529b21"
-        # expect(described_class.hexdigest(1000.0)).to eq "09b29bf3f8bea85fbf7dd5b3e185e9c3a007761f8824a54d4d518578c9360419"
-        # expect(described_class.hexdigest(1.2345)).to eq "844e08b1195a93563db4e5d4faa59759ba0e0397caf065f3b6bc0825499754e0"
-        # expect(described_class.hexdigest(-10.1234)).to eq "59b49ae24998519925833e3ff56727e5d4868aba4ecf4c53653638ebff53c366"
+        expect(described_class.hexdigest(0.001)).to eq "47fe626453d51b9419d7e15d9b006b2263a9287c28a35d080cd949609a6c472d"
+        expect(described_class.hexdigest(10.0)).to eq "084cfc7219e4163b67f2f9d00f03b50f1c7bdfce48c2b90276ff6784f6529b21"
+        expect(described_class.hexdigest(1000.0)).to eq "09b29bf3f8bea85fbf7dd5b3e185e9c3a007761f8824a54d4d518578c9360419"
+        expect(described_class.hexdigest(1.2345)).to eq "844e08b1195a93563db4e5d4faa59759ba0e0397caf065f3b6bc0825499754e0"
+        expect(described_class.hexdigest(-10.1234)).to eq "59b49ae24998519925833e3ff56727e5d4868aba4ecf4c53653638ebff53c366"
       end
     end
   end
