@@ -39,7 +39,7 @@ pub trait ObjectHash {
 
 There are built-in implementations for the following types:
 
-* **Integers:**:
+* **Integers:**
   * `i8`
   * `i16`
   * `i32`
