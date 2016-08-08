@@ -4,6 +4,7 @@ extern crate rustc_serialize;
 pub mod hasher;
 mod types;
 
+#[cfg(feature = "objecthash-ring")]
 pub fn digest<T: ObjectHash>(msg: &T) -> Vec<u8> {
     let mut hasher = hasher::default();
     msg.objecthash(&mut hasher);
@@ -20,6 +21,7 @@ pub trait ObjectHash {
 }
 
 #[cfg(test)]
+#[cfg(feature = "objecthash-ring")]
 mod tests {
     use digest;
     use rustc_serialize::hex::ToHex;

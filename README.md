@@ -20,7 +20,7 @@ are supported:
 
 [ring]: https://github.com/briansmith/ring
 
-Please make sure to add a crypto backend crate or the `objecthash` crate will not compile!
+Please make sure to add a crypto backend crate or the `objecthash` crate will not work!
 
 ## Usage
 

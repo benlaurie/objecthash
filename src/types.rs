@@ -21,6 +21,7 @@ impl_inttype!(isize);
 impl_inttype!(usize);
 
 #[cfg(test)]
+#[cfg(feature = "objecthash-ring")]
 mod tests {
     use {ObjectHash, ObjectHasher};
     use hasher;
