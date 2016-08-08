@@ -1,0 +1,20 @@
+language: rust
+sudo: false
+
+script: cargo test --verbose --features "objecthash-ring"
+
+branches:
+  only:
+    - master
+
+rust:
+  - stable
+  - beta
+  - nightly
+
+os:
+  - linux
+  - osx
+
+notifications:
+  irc: 'irc.freenode.org#cryptosphere'

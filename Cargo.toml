@@ -1,0 +1,15 @@
+[package]
+name = "objecthash"
+version = "0.1.0"
+authors = ["Tony Arcieri <bascule@gmail.com>"]
+
+[dependencies.ring]
+optional = true
+git = "https://github.com/briansmith/ring"
+
+[dev-dependencies.rustc-serialize]
+version = "*"
+
+[features]
+default = []
+objecthash-ring = ["ring"]
