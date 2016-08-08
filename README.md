@@ -1,7 +1,7 @@
 # ObjectHash for Rust [![Latest Version][crate-image]][crate-link] [![Build Status][build-image]][build-link] [![Apache 2 licensed][license-image]][license-link]
 
-[crate-image]: https://img.shields.io/crates/v/rust-objecthash.svg
-[crate-link]: https://crates.io/crates/rust-objecthash
+[crate-image]: https://img.shields.io/crates/v/objecthash.svg
+[crate-link]: https://crates.io/crates/objecthash
 [build-image]: https://travis-ci.org/cryptosphere/rust-objecthash.svg?branch=master
 [build-link]: https://travis-ci.org/cryptosphere/rust-objecthash
 [license-image]: https://img.shields.io/badge/license-Apache2-blue.svg
