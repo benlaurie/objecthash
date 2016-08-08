@@ -1,5 +1,4 @@
-# ObjectHash for Rust [![Latest Version][crate-image]][crate-link] [![Build Status][build-image]][build-link] [![Apache 2
-licensed][license-image]][license-link]
+# ObjectHash for Rust [![Latest Version][crate-image]][crate-link] [![Build Status][build-image]][build-link] [![Apache 2 licensed][license-image]][license-link]
 
 [crate-image]: https://img.shields.io/crates/v/rust-objecthash.svg
 [crate-link]: https://crates.io/crates/rust-objecthash
