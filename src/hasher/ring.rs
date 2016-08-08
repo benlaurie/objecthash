@@ -19,13 +19,14 @@ impl Hasher {
 }
 
 impl ObjectHasher for Hasher {
+    type D = digest::Digest;
+
     fn write(&mut self, bytes: &[u8]) {
         self.ctx.update(bytes);
     }
 
-    fn finish(self) -> Vec<u8> {
-        let digest = self.ctx.finish();
-        Vec::from(digest.as_ref())
+    fn finish(self) -> digest::Digest {
+        self.ctx.finish()
     }
 }
 
@@ -44,6 +45,6 @@ mod tests {
     fn sha256_test_vector() {
         let mut hasher = Hasher::new();
         hasher.write(SHA256_VECTOR_STRING.as_bytes());
-        assert_eq!(hasher.finish().to_hex(), SHA256_VECTOR_DIGEST);
+        assert_eq!(hasher.finish().as_ref().to_hex(), SHA256_VECTOR_DIGEST);
     }
 }

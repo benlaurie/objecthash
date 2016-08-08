@@ -8,12 +8,14 @@ mod types;
 pub fn digest<T: ObjectHash>(msg: &T) -> Vec<u8> {
     let mut hasher = hasher::default();
     msg.objecthash(&mut hasher);
-    hasher.finish()
+    let digest = hasher.finish();
+    Vec::from(digest.as_ref())
 }
 
 pub trait ObjectHasher {
+    type D: AsRef<[u8]>;
     fn write(&mut self, bytes: &[u8]);
-    fn finish(self) -> Vec<u8>;
+    fn finish(self) -> Self::D;
 }
 
 pub trait ObjectHash {
