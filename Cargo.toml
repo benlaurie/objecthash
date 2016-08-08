@@ -1,7 +1,13 @@
 [package]
-name = "objecthash"
-version = "0.1.0"
-authors = ["Tony Arcieri <bascule@gmail.com>"]
+name        = "objecthash"
+version     = "0.1.0"
+description = "A content hashing algorithm which works across multiple encodings (JSON, Protobufs, etc)"
+homepage    = "https://github.com/cryptosphere/rust-objecthash"
+repository  = "https://github.com/cryptosphere/rust-objecthash"
+readme      = "README.md"
+keywords    = ["hashing", "authenticity", "Merkle", "blockchain"]
+license     = "Apache-2.0"
+authors     = ["Tony Arcieri <bascule@gmail.com>"]
 
 [dependencies.ring]
 optional = true
