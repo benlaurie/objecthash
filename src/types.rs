@@ -30,13 +30,13 @@ mod tests {
     fn test_i32(val: i32, expected_digest_hex: &str) {
         let mut hasher = hasher::default();
         val.objecthash(&mut hasher);
-        assert_eq!(hasher.finish().to_hex(), expected_digest_hex);
+        assert_eq!(hasher.finish().as_ref().to_hex(), expected_digest_hex);
     }
 
     fn test_u32(val: u32, expected_digest_hex: &str) {
         let mut hasher = hasher::default();
         val.objecthash(&mut hasher);
-        assert_eq!(hasher.finish().to_hex(), expected_digest_hex);
+        assert_eq!(hasher.finish().as_ref().to_hex(), expected_digest_hex);
     }
 
     #[test]
