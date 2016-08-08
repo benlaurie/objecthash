@@ -1,8 +1,8 @@
 # ObjectHash
 
 [![Gem Version](https://badge.fury.io/rb/objecthash.svg)](https://rubygems.org/gems/objecthash)
-[![Build Status](https://secure.travis-ci.org/cryptosphere/objecthash-ruby.svg?branch=master)](https://travis-ci.org/cryptosphere/objecthash-ruby)
-[![Apache 2 licensed](https://img.shields.io/badge/license-Apache2-blue.svg)](https://github.com/cryptosphere/objecthash-ruby/blob/master/LICENSE)
+[![Build Status](https://secure.travis-ci.org/cryptosphere/ruby-objecthash.svg?branch=master)](https://travis-ci.org/cryptosphere/ruby-objecthash)
+[![Apache 2 licensed](https://img.shields.io/badge/license-Apache2-blue.svg)](https://github.com/cryptosphere/ruby-objecthash/blob/master/LICENSE)
 
 A content hash algorithm which works across multiple encodings (JSON, Protobufs, etc).
 
@@ -29,7 +29,7 @@ Or install it yourself as:
 ObjectHash can calculate a digest of object graphs composed of a constrained
 set of types. The following types are supported:
 
-* Booleans: `true`, `false`, `nil`
+* Booleans: `true`, `false` (also `nil`)
 * Numerics: Fixnum, Float
 * Array
 * Hash
