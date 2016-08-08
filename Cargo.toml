@@ -14,7 +14,7 @@ authors     = ["Tony Arcieri <bascule@gmail.com>"]
 # git = "https://github.com/briansmith/ring"
 
 [dev-dependencies.rustc-serialize]
-version = "*"
+version = ">= 0.3.19"
 
 [features]
 default = []
