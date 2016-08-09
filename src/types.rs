@@ -85,6 +85,5 @@ mod tests {
         assert_eq!(h!(&u1d), digest);
 
         assert_eq!(h!("ԱԲաբ"), "2a2a4485a4e338d8df683971956b1090d2f5d33955a81ecaad1a75125f7a316c");
-        assert_eq!(h!("\u{03D3}"), "f72826713a01881404f34975447bd6edcb8de40b191dc57097ebf4f5417a554d");
     }
 }
