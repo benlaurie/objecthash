@@ -1,10 +1,28 @@
 use {ObjectHash, ObjectHasher};
 
+use unicode_normalization::UnicodeNormalization;
+
+const STRING_TAG: &'static [u8; 1] = b"u";
+const INTEGER_TAG: &'static [u8; 1] = b"i";
+
+macro_rules! objecthash_digest {
+    ($hasher:expr, $tag:expr, $bytes:expr) => {
+        $hasher.write($tag);
+        $hasher.write($bytes);
+    };
+}
+
+impl ObjectHash for str {
+    fn objecthash<H: ObjectHasher>(&self, hasher: &mut H) {
+        let normalized = self.nfc().collect::<String>();
+        objecthash_digest!(hasher, STRING_TAG, normalized.as_bytes());
+    }
+}
+
 macro_rules! impl_inttype (($inttype:ident) => (
     impl ObjectHash for $inttype {
         fn objecthash<H: ObjectHasher>(&self, hasher: &mut H) {
-            hasher.write(b"i");
-            hasher.write(self.to_string().as_bytes())
+            objecthash_digest!(hasher, INTEGER_TAG, self.to_string().as_bytes());
         }
     }
 ));
@@ -23,32 +41,50 @@ impl_inttype!(usize);
 #[cfg(test)]
 #[cfg(feature = "objecthash-ring")]
 mod tests {
-    use {ObjectHash, ObjectHasher};
-    use hasher;
+    use {hasher, ObjectHash, ObjectHasher};
     use rustc_serialize::hex::ToHex;
 
-    fn test_i32(val: i32, expected_digest_hex: &str) {
-        let mut hasher = hasher::default();
-        val.objecthash(&mut hasher);
-        assert_eq!(hasher.finish().as_ref().to_hex(), expected_digest_hex);
-    }
-
-    fn test_u32(val: u32, expected_digest_hex: &str) {
-        let mut hasher = hasher::default();
-        val.objecthash(&mut hasher);
-        assert_eq!(hasher.finish().as_ref().to_hex(), expected_digest_hex);
+    macro_rules! h {
+       ($value:expr) => {
+            {
+                let mut hasher = hasher::default();
+                $value.objecthash(&mut hasher);
+                hasher.finish().as_ref().to_hex()
+            }
+        };
     }
 
     #[test]
     fn integers() {
-        // TODO: test other integer types
-        test_i32(-1,
-                 "f105b11df43d5d321f5c773ef904af979024887b4d2b0fab699387f59e2ff01e");
-        test_i32(0,
-                 "a4e167a76a05add8a8654c169b07b0447a916035aef602df103e8ae0fe2ff390");
-        test_u32(10,
-                 "73f6128db300f3751f2e509545be996d162d20f9e030864632f85e34fd0324ce");
-        test_u32(1000,
-                 "a3346d18105ef801c3598fec426dcc5d4be9d0374da5343f6c8dcbdf24cb8e0b");
+        assert_eq!(h!(-1), "f105b11df43d5d321f5c773ef904af979024887b4d2b0fab699387f59e2ff01e");
+        assert_eq!(h!(0), "a4e167a76a05add8a8654c169b07b0447a916035aef602df103e8ae0fe2ff390");
+        assert_eq!(h!(10), "73f6128db300f3751f2e509545be996d162d20f9e030864632f85e34fd0324ce");
+        assert_eq!(h!(1000), "a3346d18105ef801c3598fec426dcc5d4be9d0374da5343f6c8dcbdf24cb8e0b");
+
+        assert_eq!(h!(-1 as i8), "f105b11df43d5d321f5c773ef904af979024887b4d2b0fab699387f59e2ff01e");
+        assert_eq!(h!(-1 as i16), "f105b11df43d5d321f5c773ef904af979024887b4d2b0fab699387f59e2ff01e");
+        assert_eq!(h!(-1 as i32), "f105b11df43d5d321f5c773ef904af979024887b4d2b0fab699387f59e2ff01e");
+        assert_eq!(h!(-1 as i64), "f105b11df43d5d321f5c773ef904af979024887b4d2b0fab699387f59e2ff01e");
+        assert_eq!(h!(-1 as isize), "f105b11df43d5d321f5c773ef904af979024887b4d2b0fab699387f59e2ff01e");
+
+        assert_eq!(h!(10 as u8), "73f6128db300f3751f2e509545be996d162d20f9e030864632f85e34fd0324ce");
+        assert_eq!(h!(10 as u16), "73f6128db300f3751f2e509545be996d162d20f9e030864632f85e34fd0324ce");
+        assert_eq!(h!(10 as u32), "73f6128db300f3751f2e509545be996d162d20f9e030864632f85e34fd0324ce");
+        assert_eq!(h!(10 as u64), "73f6128db300f3751f2e509545be996d162d20f9e030864632f85e34fd0324ce");
+        assert_eq!(h!(10 as usize), "73f6128db300f3751f2e509545be996d162d20f9e030864632f85e34fd0324ce");
+
+    }
+
+    #[test]
+    fn strings() {
+        let u1n = "\u{03D3}";
+        let u1d = "\u{03D2}\u{0301}";
+
+        let digest = "f72826713a01881404f34975447bd6edcb8de40b191dc57097ebf4f5417a554d";
+        assert_eq!(h!(u1n), digest);
+        assert_eq!(h!(&u1d), digest);
+
+        assert_eq!(h!("ԱԲաբ"), "2a2a4485a4e338d8df683971956b1090d2f5d33955a81ecaad1a75125f7a316c");
+        assert_eq!(h!("\u{03D3}"), "f72826713a01881404f34975447bd6edcb8de40b191dc57097ebf4f5417a554d");
     }
 }

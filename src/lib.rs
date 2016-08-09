@@ -1,3 +1,5 @@
+extern crate unicode_normalization;
+
 #[cfg(test)]
 extern crate rustc_serialize;
 

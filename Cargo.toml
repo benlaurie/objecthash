@@ -9,6 +9,9 @@ keywords    = ["hashing", "authenticity", "Merkle", "blockchain"]
 license     = "Apache-2.0"
 authors     = ["Tony Arcieri <bascule@gmail.com>"]
 
+[dependencies.unicode-normalization]
+version = ">= 0.1.2"
+
 [dependencies.ring]
 optional = true
 git = "https://github.com/briansmith/ring"
