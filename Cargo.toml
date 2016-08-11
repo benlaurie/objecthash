@@ -22,3 +22,4 @@ version = ">= 0.3.19"
 [features]
 default = ["objecthash-ring"]
 objecthash-ring = ["ring"]
+octet-strings = []
