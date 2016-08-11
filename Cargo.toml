@@ -20,5 +20,5 @@ git = "https://github.com/briansmith/ring"
 version = ">= 0.3.19"
 
 [features]
-default = []
+default = ["objecthash-ring"]
 objecthash-ring = ["ring"]

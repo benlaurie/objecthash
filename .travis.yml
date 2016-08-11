@@ -1,8 +1,6 @@
 language: rust
 sudo: false
 
-script: cargo test --verbose --features "objecthash-ring"
-
 branches:
   only:
     - master
