@@ -39,6 +39,8 @@ pub trait ObjectHash {
 
 There are built-in implementations for the following types:
 
+* `Vec<T>`
+* `str`
 * **Integers:**
   * `i8`
   * `i16`
