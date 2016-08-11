@@ -7,6 +7,16 @@ const INTEGER_TAG: &'static [u8; 1] = b"i";
 const STRING_TAG: &'static [u8; 1] = b"u";
 const LIST_TAG: &'static [u8; 1] = b"l";
 
+#[cfg(feature = "octet-strings")]
+const OCTET_TAG: &'static [u8; 1] = b"o";
+
+macro_rules! objecthash_digest {
+    ($hasher:expr, $tag:expr, $bytes:expr) => {
+        $hasher.write($tag);
+        $hasher.write($bytes);
+    };
+}
+
 impl<T: ObjectHash> ObjectHash for Vec<T> {
     #[inline]
     fn objecthash<H: ObjectHasher>(&self, hasher: &mut H) {
@@ -25,6 +35,16 @@ impl ObjectHash for str {
     fn objecthash<H: ObjectHasher>(&self, hasher: &mut H) {
         let normalized = self.nfc().collect::<String>();
         objecthash_digest!(hasher, STRING_TAG, normalized.as_bytes());
+    }
+}
+
+// Technically ObjectHash does not define a representation for binary data
+// For now this is a non-standard extension of ObjectHash
+#[cfg(feature = "octet-strings")]
+impl ObjectHash for [u8] {
+    #[inline]
+    fn objecthash<H: ObjectHasher>(&self, hasher: &mut H) {
+        objecthash_digest!(hasher, OCTET_TAG, self);
     }
 }
 
