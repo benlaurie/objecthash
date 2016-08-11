@@ -7,13 +7,6 @@ const INTEGER_TAG: &'static [u8; 1] = b"i";
 const STRING_TAG: &'static [u8; 1] = b"u";
 const LIST_TAG: &'static [u8; 1] = b"l";
 
-macro_rules! objecthash_digest {
-    ($hasher:expr, $tag:expr, $bytes:expr) => {
-        $hasher.write($tag);
-        $hasher.write($bytes);
-    };
-}
-
 impl<T: ObjectHash> ObjectHash for Vec<T> {
     fn objecthash<H: ObjectHasher>(&self, hasher: &mut H) {
         hasher.write(LIST_TAG);

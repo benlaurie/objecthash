@@ -3,6 +3,14 @@ extern crate unicode_normalization;
 #[cfg(test)]
 extern crate rustc_serialize;
 
+#[macro_export]
+macro_rules! objecthash_digest {
+    ($hasher:expr, $tag:expr, $bytes:expr) => {
+        $hasher.write($tag);
+        $hasher.write($bytes);
+    };
+}
+
 pub mod hasher;
 mod types;
 

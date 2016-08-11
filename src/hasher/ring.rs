@@ -42,7 +42,7 @@ mod tests {
     const SHA256_VECTOR_DIGEST: &'static str = "71c480df93d6ae2f1efad1447c66c9525e316218cf51fc8d9ed832f2daf18b73";
 
     #[test]
-    fn sha256_test_vector() {
+    fn sha256() {
         let mut hasher = Hasher::new();
         hasher.write(SHA256_VECTOR_STRING.as_bytes());
         assert_eq!(hasher.finish().as_ref().to_hex(), SHA256_VECTOR_DIGEST);
