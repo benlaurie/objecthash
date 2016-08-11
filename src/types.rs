@@ -1,15 +1,29 @@
 use {ObjectHash, ObjectHasher};
 
+use hasher;
 use unicode_normalization::UnicodeNormalization;
 
-const STRING_TAG: &'static [u8; 1] = b"u";
 const INTEGER_TAG: &'static [u8; 1] = b"i";
+const STRING_TAG: &'static [u8; 1] = b"u";
+const LIST_TAG: &'static [u8; 1] = b"l";
 
 macro_rules! objecthash_digest {
     ($hasher:expr, $tag:expr, $bytes:expr) => {
         $hasher.write($tag);
         $hasher.write($bytes);
     };
+}
+
+impl<T: ObjectHash> ObjectHash for Vec<T> {
+    fn objecthash<H: ObjectHasher>(&self, hasher: &mut H) {
+        hasher.write(LIST_TAG);
+
+        for value in self {
+            let mut value_hasher = hasher::default();
+            value.objecthash(&mut value_hasher);
+            hasher.write(value_hasher.finish().as_ref());
+        }
+    }
 }
 
 impl ObjectHash for str {
@@ -85,5 +99,13 @@ mod tests {
         assert_eq!(h!(&u1d), digest);
 
         assert_eq!(h!("ԱԲաբ"), "2a2a4485a4e338d8df683971956b1090d2f5d33955a81ecaad1a75125f7a316c");
+    }
+
+    #[test]
+    fn vectors() {
+        assert_eq!(h!(vec![123]), "1b93f704451e1a7a1b8c03626ffcd6dec0bc7ace947ff60d52e1b69b4658ccaa");
+        assert_eq!(h!(vec![1, 2, 3]), "157bf16c70bd4c9673ffb5030552df0ee2c40282042ccdf6167850edc9044ab7");
+        assert_eq!(h!(vec![123456789012345u64]), "3488b9bc37cce8223a032760a9d4ef488cdfebddd9e1af0b31fcd1d7006369a4");
+        assert_eq!(h!(vec![123456789012345u64, 678901234567890u64]), "031ef1aaeccea3bced3a1c6237a4fc00ed4d629c9511922c5a3f4e5c128b0ae4");
     }
 }
