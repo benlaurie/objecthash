@@ -8,6 +8,7 @@ const STRING_TAG: &'static [u8; 1] = b"u";
 const LIST_TAG: &'static [u8; 1] = b"l";
 
 impl<T: ObjectHash> ObjectHash for Vec<T> {
+    #[inline]
     fn objecthash<H: ObjectHasher>(&self, hasher: &mut H) {
         hasher.write(LIST_TAG);
 
@@ -20,6 +21,7 @@ impl<T: ObjectHash> ObjectHash for Vec<T> {
 }
 
 impl ObjectHash for str {
+    #[inline]
     fn objecthash<H: ObjectHasher>(&self, hasher: &mut H) {
         let normalized = self.nfc().collect::<String>();
         objecthash_digest!(hasher, STRING_TAG, normalized.as_bytes());
@@ -28,6 +30,7 @@ impl ObjectHash for str {
 
 macro_rules! impl_inttype (($inttype:ident) => (
     impl ObjectHash for $inttype {
+        #[inline]
         fn objecthash<H: ObjectHasher>(&self, hasher: &mut H) {
             objecthash_digest!(hasher, INTEGER_TAG, self.to_string().as_bytes());
         }
