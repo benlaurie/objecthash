@@ -1,13 +1,18 @@
-use {ObjectHash, ObjectHasher};
+use std;
+use std::collections::HashMap;
+use std::io::Write;
+
+use {digest, ObjectHash, ObjectHasher};
 
 use unicode_normalization::UnicodeNormalization;
 
-const INTEGER_TAG: &'static [u8; 1] = b"i";
-const STRING_TAG: &'static [u8; 1] = b"u";
-const LIST_TAG: &'static [u8; 1] = b"l";
+pub const INTEGER_TAG: &'static [u8; 1] = b"i";
+pub const STRING_TAG: &'static [u8; 1] = b"u";
+pub const LIST_TAG: &'static [u8; 1] = b"l";
+pub const DICT_TAG: &'static [u8; 1] = b"d";
 
 #[cfg(feature = "octet-strings")]
-const OCTET_TAG: &'static [u8; 1] = b"o";
+pub const OCTET_TAG: &'static [u8; 1] = b"o";
 
 macro_rules! objecthash_digest {
     ($hasher:expr, $tag:expr, $bytes:expr) => {
@@ -27,7 +32,43 @@ impl<T: ObjectHash> ObjectHash for Vec<T> {
     }
 }
 
+impl<K, V, S> ObjectHash for HashMap<K, V, S>
+    where K: ObjectHash + Eq + std::hash::Hash,
+          V: ObjectHash + PartialEq,
+          S: std::hash::BuildHasher
+{
+    #[inline]
+    fn objecthash<H: ObjectHasher>(&self, hasher: &mut H) {
+        hasher.update(DICT_TAG);
+
+        let mut digests: Vec<Vec<u8>> = self.iter()
+            .map(|(k, v)| {
+                let kd = digest(k);
+                let vd = digest(v);
+                let mut d = Vec::with_capacity(kd.as_ref().len() + vd.as_ref().len());
+                d.write(&kd.as_ref()).unwrap();
+                d.write(&vd.as_ref()).unwrap();
+                d
+            })
+            .collect();
+
+        digests.sort();
+
+        for value in &digests {
+            hasher.update(&value);
+        }
+    }
+}
+
 impl ObjectHash for str {
+    #[inline]
+    fn objecthash<H: ObjectHasher>(&self, hasher: &mut H) {
+        let normalized = self.nfc().collect::<String>();
+        objecthash_digest!(hasher, STRING_TAG, normalized.as_bytes());
+    }
+}
+
+impl ObjectHash for String {
     #[inline]
     fn objecthash<H: ObjectHasher>(&self, hasher: &mut H) {
         let normalized = self.nfc().collect::<String>();
@@ -68,6 +109,8 @@ impl_inttype!(usize);
 #[cfg(test)]
 #[cfg(feature = "objecthash-ring")]
 mod tests {
+    use std::collections::HashMap;
+
     use {hasher, ObjectHash, ObjectHasher};
     use rustc_serialize::hex::ToHex;
 
@@ -99,7 +142,6 @@ mod tests {
         assert_eq!(h!(10 as u32), "73f6128db300f3751f2e509545be996d162d20f9e030864632f85e34fd0324ce");
         assert_eq!(h!(10 as u64), "73f6128db300f3751f2e509545be996d162d20f9e030864632f85e34fd0324ce");
         assert_eq!(h!(10 as usize), "73f6128db300f3751f2e509545be996d162d20f9e030864632f85e34fd0324ce");
-
     }
 
     #[test]
@@ -112,6 +154,7 @@ mod tests {
         assert_eq!(h!(&u1d), digest);
 
         assert_eq!(h!("ԱԲաբ"), "2a2a4485a4e338d8df683971956b1090d2f5d33955a81ecaad1a75125f7a316c");
+        assert_eq!(h!(String::from("ԱԲաբ")), "2a2a4485a4e338d8df683971956b1090d2f5d33955a81ecaad1a75125f7a316c");
     }
 
     #[test]
@@ -120,5 +163,40 @@ mod tests {
         assert_eq!(h!(vec![1, 2, 3]), "157bf16c70bd4c9673ffb5030552df0ee2c40282042ccdf6167850edc9044ab7");
         assert_eq!(h!(vec![123456789012345u64]), "3488b9bc37cce8223a032760a9d4ef488cdfebddd9e1af0b31fcd1d7006369a4");
         assert_eq!(h!(vec![123456789012345u64, 678901234567890u64]), "031ef1aaeccea3bced3a1c6237a4fc00ed4d629c9511922c5a3f4e5c128b0ae4");
+    }
+
+    #[test]
+    fn hashmaps() {
+        {
+            let hashmap: HashMap<String, String> = HashMap::new();
+            assert_eq!(h!(hashmap), "18ac3e7343f016890c510e93f935261169d9e3f565436429830faf0934f4f8e4");
+        }
+
+        {
+            let mut hashmap = HashMap::new();
+            hashmap.insert(String::from("foo"), 1);
+            assert_eq!(h!(hashmap), "bf4c58f5e308e31e2cd64bdbf7a01b9b595a13602438be5e912c7d94f6d8177a");
+        }
+    }
+
+    #[test]
+    fn hashmap_ordering() {
+        {
+            let mut hashmap = HashMap::new();
+            hashmap.insert(String::from("k1"), String::from("v1"));
+            hashmap.insert(String::from("k2"), String::from("v2"));
+            hashmap.insert(String::from("k3"), String::from("v3"));
+
+            assert_eq!(h!(hashmap), "ddd65f1f7568269a30df7cafc26044537dc2f02a1a0d830da61762fc3e687057");
+        }
+
+        {
+            let mut hashmap = HashMap::new();
+            hashmap.insert(String::from("k2"), String::from("v2"));
+            hashmap.insert(String::from("k1"), String::from("v1"));
+            hashmap.insert(String::from("k3"), String::from("v3"));
+
+            assert_eq!(h!(hashmap), "ddd65f1f7568269a30df7cafc26044537dc2f02a1a0d830da61762fc3e687057");
+        }
     }
 }

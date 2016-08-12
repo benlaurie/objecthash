@@ -37,10 +37,13 @@ pub trait ObjectHash {
 }
 ```
 
-There are built-in implementations for the following types:
+There are built-in implementations of the `ObjectHash` trait for the
+following types:
 
-* `Vec<T>`
+* `Vec<T: ObjectHash>`
+* `HashMap<K: ObjectHash, V: ObjectHash>`
 * `str`
+* `String`
 * **Integers:**
   * `i8`
   * `i16`
