@@ -16,7 +16,8 @@ pub fn digest<T: ObjectHash>(msg: &T) -> Vec<u8> {
 
 pub trait ObjectHasher {
     type D: AsRef<[u8]>;
-    fn write(&mut self, bytes: &[u8]);
+    fn update(&mut self, bytes: &[u8]);
+    fn update_nested<F>(&mut self, nested: F) where F: Fn(&mut Self);
     fn finish(self) -> Self::D;
 }
 

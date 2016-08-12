@@ -21,10 +21,19 @@ impl Hasher {
 impl ObjectHasher for Hasher {
     type D = digest::Digest;
 
-    fn write(&mut self, bytes: &[u8]) {
+    #[inline]
+    fn update(&mut self, bytes: &[u8]) {
         self.ctx.update(bytes);
     }
 
+    #[inline]
+    fn update_nested<F>(&mut self, nested: F) where F: Fn(&mut Self) {
+        let mut nested_hasher = Hasher::with_algorithm(&self.ctx.algorithm);
+        nested(&mut nested_hasher);
+        self.update(nested_hasher.finish().as_ref());
+    }
+
+    #[inline]
     fn finish(self) -> digest::Digest {
         self.ctx.finish()
     }
@@ -44,7 +53,7 @@ mod tests {
     #[test]
     fn sha256() {
         let mut hasher = Hasher::new();
-        hasher.write(SHA256_VECTOR_STRING.as_bytes());
+        hasher.update(SHA256_VECTOR_STRING.as_bytes());
         assert_eq!(hasher.finish().as_ref().to_hex(), SHA256_VECTOR_DIGEST);
     }
 }
