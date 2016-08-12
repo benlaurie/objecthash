@@ -1,6 +1,5 @@
 use {ObjectHash, ObjectHasher};
 
-use hasher;
 use unicode_normalization::UnicodeNormalization;
 
 const INTEGER_TAG: &'static [u8; 1] = b"i";
@@ -12,20 +11,18 @@ const OCTET_TAG: &'static [u8; 1] = b"o";
 
 macro_rules! objecthash_digest {
     ($hasher:expr, $tag:expr, $bytes:expr) => {
-        $hasher.write($tag);
-        $hasher.write($bytes);
+        $hasher.update($tag);
+        $hasher.update($bytes);
     };
 }
 
 impl<T: ObjectHash> ObjectHash for Vec<T> {
     #[inline]
     fn objecthash<H: ObjectHasher>(&self, hasher: &mut H) {
-        hasher.write(LIST_TAG);
+        hasher.update(LIST_TAG);
 
         for value in self {
-            let mut value_hasher = hasher::default();
-            value.objecthash(&mut value_hasher);
-            hasher.write(value_hasher.finish().as_ref());
+            hasher.update_nested(|h| value.objecthash(h));
         }
     }
 }
