@@ -64,7 +64,6 @@ implements the ObjectHash trait.
 
 ## TODO
 
-* Zero allocation API
 * More types
 * More test vectors
 * Redaction support
