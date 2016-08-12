@@ -31,7 +31,7 @@ pub fn digest<T: ObjectHash>(msg: &T) -> Digest {
 
     Digest {
         output_len: output_len,
-        value: digest_bytes
+        value: digest_bytes,
     }
 }
 

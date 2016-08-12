@@ -32,7 +32,9 @@ impl ObjectHasher for Hasher {
     }
 
     #[inline]
-    fn update_nested<F>(&mut self, nested: F) where F: Fn(&mut Self) {
+    fn update_nested<F>(&mut self, nested: F)
+        where F: Fn(&mut Self)
+    {
         let mut nested_hasher = Hasher::with_algorithm(&self.ctx.algorithm);
         nested(&mut nested_hasher);
         self.update(nested_hasher.finish().as_ref());
