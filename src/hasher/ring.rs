@@ -22,6 +22,11 @@ impl ObjectHasher for Hasher {
     type D = digest::Digest;
 
     #[inline]
+    fn output_len(&self) -> usize {
+        self.ctx.algorithm.output_len
+    }
+
+    #[inline]
     fn update(&mut self, bytes: &[u8]) {
         self.ctx.update(bytes);
     }
