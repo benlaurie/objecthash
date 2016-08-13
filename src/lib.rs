@@ -4,7 +4,7 @@ extern crate unicode_normalization;
 extern crate rustc_serialize;
 
 pub mod hasher;
-mod types;
+pub mod types;
 
 const MAX_OUTPUT_LEN: usize = 32;
 
