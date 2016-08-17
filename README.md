@@ -2,10 +2,10 @@
 
 [crate-image]: https://img.shields.io/crates/v/objecthash.svg
 [crate-link]: https://crates.io/crates/objecthash
-[build-image]: https://travis-ci.org/cryptosphere/rust-objecthash.svg?branch=master
-[build-link]: https://travis-ci.org/cryptosphere/rust-objecthash
+[build-image]: https://travis-ci.org/cryptosphere/objecthash-rs.svg?branch=master
+[build-link]: https://travis-ci.org/cryptosphere/objecthash-rs
 [license-image]: https://img.shields.io/badge/license-Apache2-blue.svg
-[license-link]: https://github.com/cryptosphere/rust-objecthash/blob/master/LICENSE
+[license-link]: https://github.com/cryptosphere/objecthash-rs/blob/master/LICENSE
 
 A content hash algorithm which works across multiple encodings (JSON, Protobufs, etc).
 
