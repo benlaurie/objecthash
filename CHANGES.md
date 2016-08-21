@@ -1,3 +1,7 @@
+## 0.2.2 (2016-08-21)
+
+* Coerce objecthash_struct! key names to Strings
+
 ## 0.2.1 (2016-08-21)
 
 * Bugfix for objecthash_struct! macro
