@@ -1,3 +1,7 @@
+## 0.2.0 (2016-08-21)
+
+* Add objecthash_struct! and objecthash_dict_entry! macros
+
 ## 0.1.1 (2016-08-15)
 
 * Add the newly released *ring* crate as an optional dependency
