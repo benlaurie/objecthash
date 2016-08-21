@@ -17,16 +17,25 @@ macro_rules! objecthash_dict_entry {
 }
 
 #[macro_export]
+macro_rules! objecthash_struct_member {
+    ($key:expr, $value:expr) => {
+        {
+            objecthash_dict_entry!(
+              objecthash::digest(&String::from($key)),
+              objecthash::digest(&$value)
+            )
+        }
+    }
+}
+
+#[macro_export]
 macro_rules! objecthash_struct(
     { $hasher:expr, $($key:expr => $value:expr),+ } => {
         {
             let mut digests: Vec<Vec<u8>> = Vec::new();
 
             $(
-                digests.push(objecthash_dict_entry!(
-                    objecthash::digest(&String::from($key)),
-                    objecthash::digest(&$value)
-                ));
+                digests.push(objecthash_struct_member!($key, $value));
             )+
 
             digests.sort();
