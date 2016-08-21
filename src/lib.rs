@@ -24,8 +24,8 @@ macro_rules! objecthash_struct(
 
             $(
                 digests.push(objecthash_dict_entry!(
-                    objecthash::digest($key),
-                    objecthash::digest($value)
+                    objecthash::digest(&$key),
+                    objecthash::digest(&$value)
                 ));
             )+
 
