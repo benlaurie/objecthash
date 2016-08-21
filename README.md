@@ -65,6 +65,26 @@ let digest: Vec<u8> = objecthash::digest(42);
 This will compute a digest (using the SHA-256 algorithm) of the given value, provided the type of the value given
 implements the ObjectHash trait.
 
+
+## Macros
+
+The `objecthash_struct!` macro is designed to simplify implementing the ObjectHash trait on structs, producing
+a dict-type hash across their keys and values:
+
+```rust
+impl ObjectHash for MyStruct {
+    #[inline]
+    fn objecthash<H: ObjectHasher>(&self, hasher: &mut H) {
+        objecthash_struct!(
+            hasher,
+            "foo" => self.foo,
+            "bar" => self.bar,
+            "baz" => self.baz
+        )
+    }
+}
+```
+
 ## TODO
 
 * More types
