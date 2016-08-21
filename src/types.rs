@@ -1,6 +1,5 @@
 use std;
 use std::collections::HashMap;
-use std::io::Write;
 
 use {digest, ObjectHash, ObjectHasher};
 
@@ -42,14 +41,7 @@ impl<K, V, S> ObjectHash for HashMap<K, V, S>
         hasher.update(DICT_TAG);
 
         let mut digests: Vec<Vec<u8>> = self.iter()
-            .map(|(k, v)| {
-                let kd = digest(k);
-                let vd = digest(v);
-                let mut d = Vec::with_capacity(kd.as_ref().len() + vd.as_ref().len());
-                d.write(&kd.as_ref()).unwrap();
-                d.write(&vd.as_ref()).unwrap();
-                d
-            })
+            .map(|(k, v)| objecthash_dict_entry!(digest(k), digest(v)))
             .collect();
 
         digests.sort();

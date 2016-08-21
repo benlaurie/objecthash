@@ -3,6 +3,42 @@ extern crate unicode_normalization;
 #[cfg(test)]
 extern crate rustc_serialize;
 
+#[macro_export]
+macro_rules! objecthash_dict_entry {
+    ($key:expr, $value:expr) => {
+        {
+            let (key, value) = ($key, $value);
+            let mut result = Vec::with_capacity(key.as_ref().len() + value.as_ref().len());
+            result.extend_from_slice(&key.as_ref());
+            result.extend_from_slice(&value.as_ref());
+            result
+        }
+    }
+}
+
+#[macro_export]
+macro_rules! objecthash_struct(
+    { $hasher:expr, $($key:expr => $value:expr),+ } => {
+        {
+            let mut digests: Vec<Vec<u8>> = Vec::new();
+
+            $(
+                digests.push(objecthash_dict_entry!(
+                    objecthash::digest($key),
+                    objecthash::digest($value)
+                ));
+            )+
+
+            digests.sort();
+
+            $hasher.update(objecthash::types::DICT_TAG);
+            for value in &digests {
+                $hasher.update(&value);
+            }
+        }
+     };
+);
+
 pub mod hasher;
 pub mod types;
 
