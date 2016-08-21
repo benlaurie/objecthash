@@ -1,3 +1,7 @@
+## 0.2.1 (2016-08-21)
+
+* Bugfix for objecthash_struct! macro
+
 ## 0.2.0 (2016-08-21)
 
 * Add objecthash_struct! and objecthash_dict_entry! macros
