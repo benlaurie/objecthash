@@ -66,7 +66,7 @@ impl AsRef<[u8]> for Digest {
 }
 
 #[cfg(feature = "objecthash-ring")]
-pub fn digest<T: ObjectHash>(msg: &T) -> Digest {
+pub fn digest<T: ObjectHash + ?Sized>(msg: &T) -> Digest {
     let mut hasher = hasher::default();
     msg.objecthash(&mut hasher);
 
