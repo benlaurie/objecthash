@@ -1,3 +1,7 @@
+## 0.4.1 (2017-01-16)
+
+* Clippy fixups
+
 ## 0.4.0 (2017-01-16)
 
 * Rename `objecthash_struct_member!` to `objecthash_member!`
