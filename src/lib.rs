@@ -27,7 +27,7 @@ impl Digest {
 
         Ok(Digest {
             output_len: bytes.len(),
-            value: digest_bytes
+            value: digest_bytes,
         })
     }
 }

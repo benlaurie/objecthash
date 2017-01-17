@@ -8,12 +8,14 @@ pub struct Hasher {
 }
 
 impl Hasher {
-    pub fn new() -> Hasher {
-        Hasher::with_algorithm(&ring::digest::SHA256)
-    }
-
-    pub fn with_algorithm(alg: &'static ring::digest::Algorithm) -> Hasher {
+    pub fn new(alg: &'static ring::digest::Algorithm) -> Hasher {
         Hasher { ctx: ring::digest::Context::new(&alg) }
+    }
+}
+
+impl Default for Hasher {
+    fn default() -> Self {
+        Self::new(&ring::digest::SHA256)
     }
 }
 
@@ -32,7 +34,7 @@ impl ObjectHasher for Hasher {
     fn update_nested<F>(&mut self, nested: F)
         where F: Fn(&mut Self)
     {
-        let mut nested_hasher = Hasher::with_algorithm(&self.ctx.algorithm);
+        let mut nested_hasher = Hasher::new(&self.ctx.algorithm);
         nested(&mut nested_hasher);
         self.update(nested_hasher.finish().as_ref());
     }
@@ -56,7 +58,7 @@ mod tests {
 
     #[test]
     fn sha256() {
-        let mut hasher = Hasher::new();
+        let mut hasher = Hasher::default();
         hasher.update(SHA256_VECTOR_STRING.as_bytes());
         assert_eq!(hasher.finish().as_ref().to_hex(), SHA256_VECTOR_DIGEST);
     }
