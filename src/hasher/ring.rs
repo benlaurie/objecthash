@@ -1,26 +1,23 @@
 extern crate ring;
 
-use self::ring::digest;
-
+use Digest;
 use ObjectHasher;
 
 pub struct Hasher {
-    ctx: digest::Context,
+    ctx: ring::digest::Context,
 }
 
 impl Hasher {
     pub fn new() -> Hasher {
-        Hasher::with_algorithm(&digest::SHA256)
+        Hasher::with_algorithm(&ring::digest::SHA256)
     }
 
-    pub fn with_algorithm(alg: &'static digest::Algorithm) -> Hasher {
-        Hasher { ctx: digest::Context::new(&alg) }
+    pub fn with_algorithm(alg: &'static ring::digest::Algorithm) -> Hasher {
+        Hasher { ctx: ring::digest::Context::new(&alg) }
     }
 }
 
 impl ObjectHasher for Hasher {
-    type D = digest::Digest;
-
     #[inline]
     fn output_len(&self) -> usize {
         self.ctx.algorithm.output_len
@@ -41,8 +38,8 @@ impl ObjectHasher for Hasher {
     }
 
     #[inline]
-    fn finish(self) -> digest::Digest {
-        self.ctx.finish()
+    fn finish(self) -> Digest {
+        Digest::new(self.ctx.finish().as_ref()).unwrap()
     }
 }
 
