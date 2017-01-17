@@ -11,6 +11,20 @@ A content hash algorithm which works across multiple encodings (JSON, Protobufs,
 
 This crate provides a Rust implementation of an algorithm [originally created by Ben Laurie](https://github.com/benlaurie/objecthash).
 
+### Is it any good?
+
+[Yes.](http://news.ycombinator.com/item?id=3067434)
+
+### Is it "Production Ready™"?
+
+![DANGER: EXPERIMENTAL](https://raw.github.com/cryptosphere/cryptosphere/master/images/experimental.png)
+
+**No!** ObjectHash is an *experimental* algorithm, and is subject to change. Please do not depend on it yet.
+
+Additionally, this is a project of a cryptographic nature and has not received any expert review.
+
+Use at your own risk.
+
 ## Installation
 
 You will need to select a supported cryptography library to use as ObjectHash's backend. The following backend libraries
