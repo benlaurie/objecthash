@@ -9,7 +9,9 @@
 
 A content hash algorithm which works across multiple encodings (JSON, Protobufs, etc).
 
-This crate provides a Rust implementation of an algorithm [originally created by Ben Laurie](https://github.com/benlaurie/objecthash).
+This crate provides a Rust implementation of an algorithm originally created by Ben Laurie:
+
+https://github.com/benlaurie/objecthash
 
 ### Is it any good?
 
