@@ -4,26 +4,16 @@ extern crate unicode_normalization;
 extern crate rustc_serialize;
 
 #[macro_export]
-macro_rules! objecthash_dict_entry {
-    ($key:expr, $value:expr) => {
+macro_rules! objecthash_member {
+    ($key:expr => $value:expr) => {
         {
-            let (key, value) = ($key, $value);
-            let mut result = Vec::with_capacity(key.as_ref().len() + value.as_ref().len());
-            result.extend_from_slice(&key.as_ref());
-            result.extend_from_slice(&value.as_ref());
-            result
-        }
-    }
-}
+            let key_digest = $crate::digest(&$key);
+            let value_digest = $crate::digest(&$value);
+            let mut result = Vec::with_capacity(key_digest.as_ref().len() + value_digest.as_ref().len());
 
-#[macro_export]
-macro_rules! objecthash_struct_member {
-    ($key:expr, $value:expr) => {
-        {
-            objecthash_dict_entry!(
-              objecthash::digest(&String::from($key)),
-              objecthash::digest(&$value)
-            )
+            result.extend_from_slice(key_digest.as_ref());
+            result.extend_from_slice(value_digest.as_ref());
+            result
         }
     }
 }
@@ -35,7 +25,7 @@ macro_rules! objecthash_struct(
             let mut digests: Vec<Vec<u8>> = Vec::new();
 
             $(
-                digests.push(objecthash_struct_member!($key, $value));
+                digests.push(objecthash_member!($key, $value));
             )+
 
             digests.sort();
