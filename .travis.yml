@@ -6,13 +6,10 @@ branches:
     - master
 
 rust:
-  - stable
-  - beta
   - nightly
 
 os:
   - linux
-  - osx
 
 notifications:
   irc: 'irc.freenode.org#cryptosphere'
