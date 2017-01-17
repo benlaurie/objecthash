@@ -47,7 +47,7 @@ impl<K, V, S> ObjectHash for HashMap<K, V, S>
         digests.sort();
 
         for value in &digests {
-            hasher.update(&value);
+            hasher.update(value);
         }
     }
 }

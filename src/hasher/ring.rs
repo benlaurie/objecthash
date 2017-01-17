@@ -9,7 +9,7 @@ pub struct Hasher {
 
 impl Hasher {
     pub fn new(alg: &'static ring::digest::Algorithm) -> Hasher {
-        Hasher { ctx: ring::digest::Context::new(&alg) }
+        Hasher { ctx: ring::digest::Context::new(alg) }
     }
 }
 
@@ -34,7 +34,7 @@ impl ObjectHasher for Hasher {
     fn update_nested<F>(&mut self, nested: F)
         where F: Fn(&mut Self)
     {
-        let mut nested_hasher = Hasher::new(&self.ctx.algorithm);
+        let mut nested_hasher = Hasher::new(self.ctx.algorithm);
         nested(&mut nested_hasher);
         self.update(nested_hasher.finish().as_ref());
     }

@@ -33,7 +33,7 @@ impl Digest {
 }
 
 impl AsRef<[u8]> for Digest {
-    #[inline(always)]
+    #[inline]
     fn as_ref(&self) -> &[u8] {
         &self.value[..self.output_len]
     }
