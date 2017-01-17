@@ -41,7 +41,7 @@ impl<K, V, S> ObjectHash for HashMap<K, V, S>
         hasher.update(DICT_TAG);
 
         let mut digests: Vec<Vec<u8>> = self.iter()
-            .map(|(k, v)| objecthash_member!(*k => *v))
+            .map(|(k, v)| objecthash_member!(k => v))
             .collect();
 
         digests.sort();
