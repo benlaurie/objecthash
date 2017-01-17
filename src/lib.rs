@@ -58,6 +58,22 @@ pub struct Digest {
     value: [u8; MAX_OUTPUT_LEN],
 }
 
+impl Digest {
+    pub fn new(bytes: &[u8]) -> Result<Digest, ()> {
+        if bytes.len() > MAX_OUTPUT_LEN {
+            return Err(());
+        }
+
+        let mut digest_bytes = [0u8; MAX_OUTPUT_LEN];
+        digest_bytes.copy_from_slice(bytes);
+
+        Ok(Digest {
+            output_len: bytes.len(),
+            value: digest_bytes
+        })
+    }
+}
+
 impl AsRef<[u8]> for Digest {
     #[inline(always)]
     fn as_ref(&self) -> &[u8] {
@@ -69,23 +85,14 @@ impl AsRef<[u8]> for Digest {
 pub fn digest<T: ObjectHash + ?Sized>(msg: &T) -> Digest {
     let mut hasher = hasher::default();
     msg.objecthash(&mut hasher);
-
-    let output_len = hasher.output_len();
-    let mut digest_bytes = [0u8; MAX_OUTPUT_LEN];
-    digest_bytes.copy_from_slice(hasher.finish().as_ref());
-
-    Digest {
-        output_len: output_len,
-        value: digest_bytes,
-    }
+    hasher.finish()
 }
 
 pub trait ObjectHasher {
-    type D: AsRef<[u8]>;
     fn output_len(&self) -> usize;
     fn update(&mut self, bytes: &[u8]);
     fn update_nested<F>(&mut self, nested: F) where F: Fn(&mut Self);
-    fn finish(self) -> Self::D;
+    fn finish(self) -> Digest;
 }
 
 pub trait ObjectHash {
