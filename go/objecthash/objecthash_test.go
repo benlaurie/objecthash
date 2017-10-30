@@ -66,26 +66,41 @@ func ExampleObjectHash_JSON2() {
 	o = []interface{}{`foo`, map[string]interface{}{`bar`: []interface{}{`baz`, nil, 1.0, 1.5, 0.0001, 1000.0, 2.0, -23.1234, 2.0}}}
 	getObjectHash(o)
 	// Output:
-	// 726e7ae9e3fadf8a2228bf33e505a63df8db1638fa4f21429673d387dbd1c52a
+	// 783a423b094307bcb28d005bc2f026ff44204442ef3513585e7e73b66e3c2213
 	// 783a423b094307bcb28d005bc2f026ff44204442ef3513585e7e73b66e3c2213
 }
 
 func ExampleObjectHash_Set() {
 	o := map[string]interface{}{`thing1`: map[string]interface{}{`thing2`: Set{1, 2, `s`}}, `thing3`: 1234.567}
 	getObjectHash(o)
-	// Output: 618cf0582d2e716a70e99c2f3079d74892fec335e3982eb926835967cb0c246c
+	// Same as when using floats instead of integers.
+	o = map[string]interface{}{`thing1`: map[string]interface{}{`thing2`: Set{1.0, 2.0, `s`}}, `thing3`: 1234.567}
+	getObjectHash(o)
+	// Output:
+	// 573b37091d5e1642f8a33517147a9e2e60b01689d7d3c688e001d288ba3a5228
+	// 573b37091d5e1642f8a33517147a9e2e60b01689d7d3c688e001d288ba3a5228
 }
 
 func ExampleObjectHash_ComplexSet() {
 	o := Set{`foo`, 23.6, Set{Set{}}, Set{Set{1}}}
 	getObjectHash(o)
-	// Output: 3773b0a5283f91243a304d2bb0adb653564573bc5301aa8bb63156266ea5d398
+	// Same as when using floats instead of integers.
+	o = Set{`foo`, 23.6, Set{Set{}}, Set{Set{1.0}}}
+	getObjectHash(o)
+	// Output:
+	// d60f36a67688b9137b5463adee3f4d15339eb8f3e1f02f81eccf8b113408d0fd
+	// d60f36a67688b9137b5463adee3f4d15339eb8f3e1f02f81eccf8b113408d0fd
 }
 
 func ExampleObjectHash_ComplexSetRepeated() {
 	o := Set{`foo`, 23.6, Set{Set{}}, Set{Set{1}}, Set{Set{}}}
 	getObjectHash(o)
-	// Output: 3773b0a5283f91243a304d2bb0adb653564573bc5301aa8bb63156266ea5d398
+	// Same as when using floats instead of integers.
+	o = Set{`foo`, 23.6, Set{Set{}}, Set{Set{1.0}}, Set{Set{}}}
+	getObjectHash(o)
+	// Output:
+	// 55885cc37fea864170a2d8874a537fdd2a0be932f2f23df0bedf72642fe3bd78
+	// 55885cc37fea864170a2d8874a537fdd2a0be932f2f23df0bedf72642fe3bd78
 }
 
 func TestGolden(t *testing.T) {
