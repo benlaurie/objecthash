@@ -118,3 +118,19 @@ func TestGolden(t *testing.T) {
 		}
 	}
 }
+
+func TestObjectHash(t *testing.T) {
+	for _, tc := range []struct {
+		o    interface{}
+		want [hashLength]byte
+	}{
+		{
+			o:    struct{ Name string }{Name: "bob"},
+			want: [hashLength]byte{},
+		},
+	} {
+		if got, want := ObjectHash(tc.o), tc.want; got != want {
+			t.Errorf("objectHash(%#v): %x, want %x", tc.o, got, want)
+		}
+	}
+}
