@@ -1,6 +1,7 @@
 *~
 *.pyc
 *.swp
+*.so
 pkg/
 src/
 objecthash_test
