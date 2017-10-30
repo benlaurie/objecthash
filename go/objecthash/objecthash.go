@@ -169,12 +169,9 @@ func objectHash(o interface{}) [hashLength]byte {
 }
 
 // ObjectHash returns the hash of an arbirary Go object.
+// FIXME: just rename objectHash?
 func ObjectHash(obj interface{}) [hashLength]byte {
-	jsonObj, err := json.Marshal(obj)
-	if err != nil {
-		panic(fmt.Sprintf("Marshaling error: %v", err))
-	}
-	return CommonJSONHash(string(jsonObj))
+	return objectHash(obj)
 }
 
 // CommonJSONHash computes the ObjectHash of a JSON object.
