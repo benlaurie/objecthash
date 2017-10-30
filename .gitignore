@@ -4,4 +4,6 @@
 *.so
 pkg/
 src/
+# made by sbt
+project/
 objecthash_test
