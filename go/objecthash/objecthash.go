@@ -174,11 +174,25 @@ func ObjectHash(obj interface{}) [hashLength]byte {
 	return objectHash(obj)
 }
 
-// CommonJSONHash computes the ObjectHash of a JSON object.
+// CommonJSONHash computes the ObjectHash of a Common JSON object.
 func CommonJSONHash(j string) [hashLength]byte {
 	var f interface{}
 	if err := json.Unmarshal([]byte(j), &f); err != nil {
 		panic(err)
 	}
 	return objectHash(f)
+}
+
+// Convert an object to the Common JSON equivalent
+func CommonJSONify(o interface{}) (interface{}, error) {
+	j, err := json.Marshal(o)
+	if err != nil {
+		return nil, err
+        }
+	var c interface{}
+	err = json.Unmarshal([]byte(j), &c)
+	if err != nil {
+		return nil, err
+	}
+       return c, nil
 }
