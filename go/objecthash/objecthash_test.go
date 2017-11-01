@@ -8,7 +8,12 @@ import "testing"
 const testFile = "../../common_json.test"
 
 func commonJSON(j string) {
-	fmt.Printf("%x\n", CommonJSONHash(j))
+	h, err := CommonJSONHash(j)
+	if err == nil {
+		fmt.Printf("%x\n", h)
+	} else {
+		fmt.Printf("%v\n", err)
+	}
 }
 
 func ExampleCommonJSONHash_Common() {
@@ -38,6 +43,12 @@ func ExampleCommonJSONHash_KeyOrderIndependence() {
 	// ddd65f1f7568269a30df7cafc26044537dc2f02a1a0d830da61762fc3e687057
 }
 
+func ExampleCommonJSONHash_InvalidJson() {
+	commonJSON(`["foo", bar]`)
+	// Output:
+	// invalid character 'b' looking for beginning of value
+}
+
 /*
 func ExampleCommonJSONHash_UnicodeNormalisation() {
 	commonJSON("\"\u03d3\"")
@@ -47,8 +58,14 @@ func ExampleCommonJSONHash_UnicodeNormalisation() {
 	// f72826713a01881404f34975447bd6edcb8de40b191dc57097ebf4f5417a554d
 }
 */
+
 func printObjectHash(o interface{}) {
-	fmt.Printf("%x\n", ObjectHash(o))
+	h, err := ObjectHash(o)
+	if err == nil {
+		fmt.Printf("%x\n", h)
+	} else {
+		fmt.Printf("%v\n", err)
+	}
 }
 
 func ExampleObjectHash_JSON() {
@@ -142,6 +159,13 @@ func ExampleObjectHash_ComplexSetRepeated() {
 	// Output: 3773b0a5283f91243a304d2bb0adb653564573bc5301aa8bb63156266ea5d398
 }
 
+func ExampleObjectHash_UnsupportedType() {
+	f := func() { }
+	printObjectHash(f)
+	// Output:
+	// Unsupported type: func()
+}
+
 func TestGolden(t *testing.T) {
 	f, err := os.Open(testFile)
 	if err != nil {
@@ -166,7 +190,13 @@ func TestGolden(t *testing.T) {
 			return
 		}
 		h := s.Text()
-		hh := fmt.Sprintf("%x", CommonJSONHash(j))
+
+		cjh, err := CommonJSONHash(j)
+		if err != nil {
+			t.Error(err)
+		}
+
+		hh := fmt.Sprintf("%x", cjh)
 		if h != hh {
 			t.Errorf("Got %s expected %s", hh, h)
 		}
