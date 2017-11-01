@@ -5,8 +5,11 @@ A way to cryptographically hash objects (in the JSON-ish sense) that works cross
 ## Dependencies
 
 [json-c](https://github.com/json-c/json-c)
+
 [OpenSSL](https://www.openssl.org/)
+
 [sbt](http://www.scala-sbt.org/)
+
 [Java SDK](http://www.oracle.com/technetwork/java/javase/downloads/index.html)
 
 ## Build
