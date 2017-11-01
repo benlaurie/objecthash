@@ -282,9 +282,9 @@ static json_object *unicode_normalize_string(json_object *j) {
     u_strToUTF8(n8, n8length, &n8length, usn, usnlength, &err);
     assert(!err);
 
-    free(us);
-    free(usn);
     free(n8);
+    free(usn);
+    free(us);
 
     return json_object_new_string(n8);
   }
