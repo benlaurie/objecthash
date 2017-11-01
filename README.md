@@ -85,3 +85,8 @@ If your data is guessable, then redaction doesn't really help: the data can easi
 ## Common vs. Python JSON
 
 Python distinguishes between int and float when parsing JSON, which makes it incompatible with GO - all numbers are float in Go. Common JSON functions convert Python JSON to Common JSON first.
+
+## Other Implemenations
+
+* Javascript/Node.js: [`objecthash-js`](https://www.npmjs.com/package/objecthash)
+
