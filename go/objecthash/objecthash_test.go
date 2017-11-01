@@ -119,7 +119,9 @@ func ExampleObjectHash_JSONConsideredDangerous() {
                 panic(err)
         }
         printObjectHash(nn)
-        // Output: xx
+        // Output:
+        // 9e7d7d02dacab24905c2dc23391bd61d4081a9d541dfafd2469c881cc6c748e4
+        // 9e7d7d02dacab24905c2dc23391bd61d4081a9d541dfafd2469c881cc6c748e4
 }
 
 func ExampleObjectHash_Set() {
