@@ -55,19 +55,56 @@ func ExampleObjectHash_JSON() {
 	// Same as equivalent JSON object
 	o := []interface{}{`foo`, `bar`}
 	printObjectHash(o)
-	// Output: 32ae896c413cfdc79eec68be9139c86ded8b279238467c216cf2bec4d5f1e4a2
+	// Also the same
+	a := []string{"foo", "bar"}
+	aa, err := CommonJSONify(a)
+	if err != nil {
+		panic(err)
+	}
+	printObjectHash(aa)
+	// Output:
+	// 32ae896c413cfdc79eec68be9139c86ded8b279238467c216cf2bec4d5f1e4a2
+	// 32ae896c413cfdc79eec68be9139c86ded8b279238467c216cf2bec4d5f1e4a2
 }
 
 func ExampleObjectHash_JSON2() {
 	// Same as equivalent _Python_ JSON object
 	o := []interface{}{`foo`, map[string]interface{}{`bar`: []interface{}{`baz`, nil, 1, 1.5, 0.0001, 1000, 2, -23.1234, 2}}}
 	printObjectHash(o)
+
+	// Convert to Common JSON
+	oo, err := CommonJSONify(o)
+	if err != nil {
+		panic(err)
+	}
+	printObjectHash(oo)
+
 	// Same as equivalent Common JSON object
 	o = []interface{}{`foo`, map[string]interface{}{`bar`: []interface{}{`baz`, nil, 1.0, 1.5, 0.0001, 1000.0, 2.0, -23.1234, 2.0}}}
 	printObjectHash(o)
+
 	// Output:
 	// 726e7ae9e3fadf8a2228bf33e505a63df8db1638fa4f21429673d387dbd1c52a
 	// 783a423b094307bcb28d005bc2f026ff44204442ef3513585e7e73b66e3c2213
+	// 783a423b094307bcb28d005bc2f026ff44204442ef3513585e7e73b66e3c2213
+}
+
+func ExampleObjectHash_JSONStruct() {
+	type x struct {
+		Foo string
+		Bar float64
+	}
+	a := x{Foo: "abc", Bar: 1.5}
+	aa, err := CommonJSONify(a)
+	if err != nil {
+		panic(err)
+	}
+	printObjectHash(aa)
+
+	commonJSON(`{"Foo": "abc", "Bar": 1.5}`)
+	// Output:
+	// edd3ec3058d604abcba6c4944b2a05ca1104cd1911cb78f93732634530f1e003
+	// edd3ec3058d604abcba6c4944b2a05ca1104cd1911cb78f93732634530f1e003
 }
 
 func ExampleObjectHash_Set() {
