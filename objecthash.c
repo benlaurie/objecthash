@@ -217,7 +217,7 @@ static json_object *apply_to_leaves(json_object *j, leaf_fn *fn) {
   }
   case json_type_array: {
     json_object *r = json_object_new_array();
-    for (size_t n = 0; n < json_object_array_length(j); ++n) {
+    for (int n = 0; n < json_object_array_length(j); ++n) {
       json_object_array_add(r, apply_to_leaves(json_object_array_get_idx(j, n),
 					       fn));
     }
