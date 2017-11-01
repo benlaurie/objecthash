@@ -107,6 +107,21 @@ func ExampleObjectHash_JSONStruct() {
 	// edd3ec3058d604abcba6c4944b2a05ca1104cd1911cb78f93732634530f1e003
 }
 
+func ExampleObjectHash_JSONConsideredDangerous() {
+        n := 9007199254740992
+        nn, err := CommonJSONify(n)
+        if err != nil {
+                panic(err)
+        }
+        printObjectHash(nn)
+        nn, err = CommonJSONify(n + 1)
+        if err != nil {
+                panic(err)
+        }
+        printObjectHash(nn)
+        // Output: xx
+}
+
 func ExampleObjectHash_Set() {
 	o := map[string]interface{}{`thing1`: map[string]interface{}{`thing2`: Set{1, 2, `s`}}, `thing3`: 1234.567}
 	printObjectHash(o)
