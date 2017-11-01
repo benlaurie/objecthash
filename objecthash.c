@@ -61,9 +61,12 @@ static bool object_hash_dict(/*const*/ json_object * const d, hash h) {
   {
     json_object_object_foreach(d, key, val) {
       ++len;
+      // key and val are unused, but we don't want the compiler to complain.
+      (void)key;
+      (void)val;
     }
   }
-  byte *hashes = alloca(2 * len * sizeof(hash));
+  byte *hashes = malloc(2 * len * sizeof(hash));
 
   size_t n = 0;
   json_object_object_foreach(d, key, val) {
@@ -74,6 +77,9 @@ static bool object_hash_dict(/*const*/ json_object * const d, hash h) {
 
   qsort(hashes, len, 2 * sizeof(hash), dict_comp);
   hash_bytes('d', hashes, 2 * len * sizeof(hash), h);
+
+  free(hashes);
+
   return true;
 }
 
@@ -256,13 +262,13 @@ static json_object *unicode_normalize_string(json_object *j) {
     u_strFromUTF8(NULL, 0, &length, s, strlen(s), &err);
     assert(!err);
 
-    UChar *us = alloca(length * sizeof(UChar));
+    UChar *us = malloc(length * sizeof(UChar));
     int32_t uslength;
     u_strFromUTF8(us, length, &uslength, s, strlen(s), &err);
     assert(!err);
 
     // FIXME: surely we can find out how long the result will be?
-    UChar *usn = alloca(uslength * 10 * sizeof(UChar));
+    UChar *usn = malloc(uslength * 10 * sizeof(UChar));
     int32_t usnlength = unorm2_normalize(un, us, uslength, usn, 10 * uslength,
                                        &err);
     assert(!err);
@@ -272,9 +278,13 @@ static json_object *unicode_normalize_string(json_object *j) {
     u_strToUTF8(NULL, 0, &n8length, usn, usnlength, &err);
     assert(!err);
 
-    char *n8 = alloca(n8length);
+    char *n8 = malloc(n8length);
     u_strToUTF8(n8, n8length, &n8length, usn, usnlength, &err);
     assert(!err);
+
+    free(us);
+    free(usn);
+    free(n8);
 
     return json_object_new_string(n8);
   }
