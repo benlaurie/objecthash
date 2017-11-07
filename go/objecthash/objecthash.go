@@ -1,10 +1,12 @@
 package objecthash
 
-import "bytes"
-import "crypto/sha256"
-import "encoding/json"
-import "fmt"
-import "sort"
+import (
+	"bytes"
+	"crypto/sha256"
+	"encoding/json"
+	"fmt"
+	"sort"
+)
 
 const hashLength int = sha256.Size
 

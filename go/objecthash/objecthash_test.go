@@ -1,9 +1,11 @@
 package objecthash
 
-import "bufio"
-import "fmt"
-import "os"
-import "testing"
+import (
+	"bufio"
+	"fmt"
+	"os"
+	"testing"
+)
 
 const testFile = "../../common_json.test"
 
