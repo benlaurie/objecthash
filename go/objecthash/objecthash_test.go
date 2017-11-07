@@ -108,20 +108,20 @@ func ExampleObjectHash_JSONStruct() {
 }
 
 func ExampleObjectHash_JSONConsideredDangerous() {
-        n := 9007199254740992
-        nn, err := CommonJSONify(n)
-        if err != nil {
-                panic(err)
-        }
-        printObjectHash(nn)
-        nn, err = CommonJSONify(n + 1)
-        if err != nil {
-                panic(err)
-        }
-        printObjectHash(nn)
-        // Output:
-        // 9e7d7d02dacab24905c2dc23391bd61d4081a9d541dfafd2469c881cc6c748e4
-        // 9e7d7d02dacab24905c2dc23391bd61d4081a9d541dfafd2469c881cc6c748e4
+	n := 9007199254740992
+	nn, err := CommonJSONify(n)
+	if err != nil {
+		panic(err)
+	}
+	printObjectHash(nn)
+	nn, err = CommonJSONify(n + 1)
+	if err != nil {
+		panic(err)
+	}
+	printObjectHash(nn)
+	// Output:
+	// 9e7d7d02dacab24905c2dc23391bd61d4081a9d541dfafd2469c881cc6c748e4
+	// 9e7d7d02dacab24905c2dc23391bd61d4081a9d541dfafd2469c881cc6c748e4
 }
 
 func ExampleObjectHash_Set() {

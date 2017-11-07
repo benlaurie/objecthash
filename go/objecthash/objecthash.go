@@ -9,10 +9,13 @@ import "sort"
 const hashLength int = sha256.Size
 
 func hash(t string, b []byte) [hashLength]byte {
-	var buf bytes.Buffer
-	buf.WriteString(t)
-	buf.Write(b)
-	return sha256.Sum256(buf.Bytes())
+	h := sha256.New()
+	h.Write([]byte(t))
+	h.Write(b)
+
+	var r [hashLength]byte
+	copy(r[:], h.Sum(nil))
+	return r
 }
 
 // Set represents an unordered, unduplicated list of objects.
@@ -188,11 +191,11 @@ func CommonJSONify(o interface{}) (interface{}, error) {
 	j, err := json.Marshal(o)
 	if err != nil {
 		return nil, err
-        }
+	}
 	var c interface{}
 	err = json.Unmarshal([]byte(j), &c)
 	if err != nil {
 		return nil, err
 	}
-       return c, nil
+	return c, nil
 }
