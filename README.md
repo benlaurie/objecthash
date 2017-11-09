@@ -1,5 +1,7 @@
 # objecthash
 
+[![Build Status](https://travis-ci.org/benlaurie/objecthash.svg?branch=master)](https://travis-ci.org/benlaurie/objecthash)
+
 A way to cryptographically hash objects (in the JSON-ish sense) that works cross-language. And, therefore, cross-encoding.
 
 ## Dependencies

@@ -1,0 +1,18 @@
+branches:
+  only:
+    - master
+
+matrix:
+  fast_finish: true
+  include:
+  - language: go
+    go: 1.9
+    script:
+    - cd go
+    - go test -v ./...
+  - language: ruby
+    rvm: 2.4.2
+    script:
+    - cd ruby
+    - bundle
+    - bundle exec rake
