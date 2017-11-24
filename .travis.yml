@@ -19,7 +19,6 @@ matrix:
   - language: rust
     rust:
       - stable
-      - beta
       - nightly
     script:
       - cd rust
