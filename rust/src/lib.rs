@@ -1,10 +1,12 @@
 extern crate crypto;
+extern crate num;
 
 use crypto::digest::Digest;
+use num::bigint::{BigInt, ToBigInt};
 
 pub enum Node {
     Bool(bool),
-    Int(i64),
+    Int(BigInt),
     Float(f64),
     String(String),
     List(Vec<Node>),
@@ -26,7 +28,7 @@ impl Node {
                 };
                 hash(&bb)
             }
-            &Node::Int(v) => {
+            &Node::Int(ref v) => {
                 let mut bb = vec!['i' as u8];
                 bb.extend(format!("{}", v).bytes());
                 hash(&bb)
@@ -155,7 +157,7 @@ mod tests {
     #[test]
     fn list_with_int_1() {
         test(
-            Node::List(vec![Node::Int(123)]),
+            Node::List(vec![Node::Int(123.to_bigint().unwrap())]),
             "2e72db006266ed9cdaa353aa22b9213e8a3c69c838349437c06896b1b34cee36".to_string(),
         );
     }
@@ -164,7 +166,11 @@ mod tests {
     #[test]
     fn list_with_int_2() {
         test(
-            Node::List(vec![Node::Int(1), Node::Int(2), Node::Int(3)]),
+            Node::List(vec![
+                Node::Int(1.to_bigint().unwrap()),
+                Node::Int(2.to_bigint().unwrap()),
+                Node::Int(3.to_bigint().unwrap()),
+            ]),
             "925d474ac71f6e8cb35dd951d123944f7cabc5cda9a043cf38cd638cc0158db0".to_string(),
         );
     }
@@ -173,7 +179,7 @@ mod tests {
     #[test]
     fn list_with_int_3() {
         test(
-            Node::List(vec![Node::Int(123456789012345)]),
+            Node::List(vec![Node::Int(123456789012345.to_bigint().unwrap())]),
             "f446de5475e2f24c0a2b0cd87350927f0a2870d1bb9cbaa794e789806e4c0836".to_string(),
         );
     }
@@ -182,7 +188,10 @@ mod tests {
     #[test]
     fn list_with_int_4() {
         test(
-            Node::List(vec![Node::Int(123456789012345), Node::Int(678901234567890)]),
+            Node::List(vec![
+                Node::Int(123456789012345.to_bigint().unwrap()),
+                Node::Int(678901234567890.to_bigint().unwrap()),
+            ]),
             "d4cca471f1c68f62fbc815b88effa7e52e79d110419a7c64c1ebb107b07f7f56".to_string(),
         );
     }

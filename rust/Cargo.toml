@@ -5,3 +5,4 @@ authors = ["Tiziano Santoro <tiziano88@gmail.com>"]
 
 [dependencies]
 rust-crypto = "^0.2"
+num = "0.1.40"
