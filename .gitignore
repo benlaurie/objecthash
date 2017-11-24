@@ -3,7 +3,11 @@
 *.swp
 *.so
 pkg/
-src/
+/src/
+
 # made by sbt
 project/
 objecthash_test
+
+/rust/Cargo.lock
+/rust/target
