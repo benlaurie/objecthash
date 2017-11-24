@@ -17,9 +17,12 @@ matrix:
     - bundle
     - bundle exec rake
   - language: rust
-    rust:
-      - stable
-      - nightly
+    rust: stable
+    script:
+      - cd rust
+      - cargo test --verbose --all
+  - language: rust
+    rust: nightly
     script:
       - cd rust
       - cargo test --verbose --all
