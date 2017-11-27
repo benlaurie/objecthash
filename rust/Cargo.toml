@@ -4,5 +4,5 @@ version = "0.1.0"
 authors = ["Tiziano Santoro <tiziano88@gmail.com>"]
 
 [dependencies]
-rust-crypto = "^0.2"
+sha2 = "0.7.0"
 num = "0.1.40"

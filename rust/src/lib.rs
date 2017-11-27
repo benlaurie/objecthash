@@ -1,8 +1,8 @@
-extern crate crypto;
 extern crate num;
+extern crate sha2;
 
-use crypto::digest::Digest;
-use num::bigint::{BigInt, ToBigInt};
+use sha2::{Digest, Sha256};
+use num::bigint::BigInt;
 
 pub enum Node {
     Bool(bool),
@@ -14,7 +14,9 @@ pub enum Node {
     // TODO: Support dictionaries.
 }
 
-pub type Hash = [u8; 32];
+const HASH_SIZE: usize = 32;
+
+pub type Hash = [u8; HASH_SIZE];
 
 impl Node {
     pub fn hash(&self) -> Hash {
@@ -86,10 +88,13 @@ impl Node {
 }
 
 fn hash(v: &[u8]) -> Hash {
-    let mut hasher = crypto::sha2::Sha256::new();
+    let mut hasher = Sha256::default();
     hasher.input(v);
-    let mut h = [0; 32];
-    hasher.result(&mut h);
+    let res = hasher.result();
+    let mut h = Hash::default();
+    for i in 0..HASH_SIZE {
+        h[i] = res[i];
+    }
     h
 }
 
@@ -104,6 +109,7 @@ fn format_hash(h: Hash) -> String {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use num::bigint::ToBigInt;
 
     #[test]
     fn bool_false() {
