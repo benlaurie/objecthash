@@ -174,10 +174,10 @@ func ExampleObjectHash_ArraysAndSlices() {
 	s2 := []string{"Hello", "World!"}
 	printObjectHash(s2)
 
-	a3 := [3]int32{-1,0,1}
+	a3 := [3]int32{-1, 0, 1}
 	printObjectHash(a3)
 
-	s3 := []int32{-1,0,1}
+	s3 := []int32{-1, 0, 1}
 	printObjectHash(s3)
 
 	// Output:
@@ -205,7 +205,7 @@ func ExampleObjectHash_Maps() {
 }
 
 func ExampleObjectHash_UnsupportedType() {
-	f := func() { }
+	f := func() {}
 	printObjectHash(f)
 	// Output:
 	// Unsupported type: func()
