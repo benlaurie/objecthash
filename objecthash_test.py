@@ -3,6 +3,7 @@
 import unittest
 import objecthash
 from binascii import hexlify as hexify
+from io import open
 
 class TestUnicode(unittest.TestCase):
     def test_normalisation(self):
@@ -38,7 +39,7 @@ class TestCommonJSONHash(unittest.TestCase):
         self.assertEqual(hexify(h), e)
 
     def test_golden(self):
-        with open('common_json.test') as f:
+        with open('common_json.test', encoding='utf-8') as f:
             while True:
                 while True:
                     j = f.readline()
@@ -49,17 +50,17 @@ class TestCommonJSONHash(unittest.TestCase):
                 h = f.readline()
                 if h.endswith('\n'):
                     h = h[:-1]
-                self.verify(j, h)
+                self.verify(j, h.encode())
         
     def test_unicode_normalisation(self):
         self.verify(u'"\u03d3"',
-                    'f72826713a01881404f34975447bd6edcb8de40b191dc57097ebf4f5417a554d')
+                    b'f72826713a01881404f34975447bd6edcb8de40b191dc57097ebf4f5417a554d')
         self.verify(u'"\u03d2\u0301"',
-                    'f72826713a01881404f34975447bd6edcb8de40b191dc57097ebf4f5417a554d',
+                    b'f72826713a01881404f34975447bd6edcb8de40b191dc57097ebf4f5417a554d',
                     (objecthash.unicode_normalize,))
         # Different hash if not normalised
         self.verify(u'"\u03d2\u0301"',
-                    '42d5b13fb064849a988a86eb7650a22881c0a9ecf77057a1b07ab0dad385889c')
+                    b'42d5b13fb064849a988a86eb7650a22881c0a9ecf77057a1b07ab0dad385889c')
         
         
 class TestPythonJSONHash(unittest.TestCase):
@@ -71,24 +72,24 @@ class TestPythonJSONHash(unittest.TestCase):
     def test_common(self):
         # The same as common JSON
         self.verify('["foo", "bar"]',
-                    '32ae896c413cfdc79eec68be9139c86ded8b279238467c216cf2bec4d5f1e4a2')
+                    b'32ae896c413cfdc79eec68be9139c86ded8b279238467c216cf2bec4d5f1e4a2')
 
     def test_int(self):
         self.verify('[123]',
-                    '1b93f704451e1a7a1b8c03626ffcd6dec0bc7ace947ff60d52e1b69b4658ccaa')
+                    b'1b93f704451e1a7a1b8c03626ffcd6dec0bc7ace947ff60d52e1b69b4658ccaa')
         self.verify('[1, 2, 3]',
-                    '157bf16c70bd4c9673ffb5030552df0ee2c40282042ccdf6167850edc9044ab7')
+                    b'157bf16c70bd4c9673ffb5030552df0ee2c40282042ccdf6167850edc9044ab7')
         self.verify('[123456789012345]',
-                    '3488b9bc37cce8223a032760a9d4ef488cdfebddd9e1af0b31fcd1d7006369a4')
+                    b'3488b9bc37cce8223a032760a9d4ef488cdfebddd9e1af0b31fcd1d7006369a4')
         self.verify('[123456789012345, 678901234567890]',
-                    '031ef1aaeccea3bced3a1c6237a4fc00ed4d629c9511922c5a3f4e5c128b0ae4')
+                    b'031ef1aaeccea3bced3a1c6237a4fc00ed4d629c9511922c5a3f4e5c128b0ae4')
 
     def test_float_and_int(self):
         self.verify('["foo", {"bar":["baz", null, 1.0, 1.5, 0.0001, 1000.0, 2.0, -23.1234, 2.0]}]',
-                    '783a423b094307bcb28d005bc2f026ff44204442ef3513585e7e73b66e3c2213')
+                    b'783a423b094307bcb28d005bc2f026ff44204442ef3513585e7e73b66e3c2213')
         # Integers and floats are NOT the same in Python JSON
         self.verify('["foo", {"bar":["baz", null, 1, 1.5, 0.0001, 1000, 2, -23.1234, 2]}]',
-                    '726e7ae9e3fadf8a2228bf33e505a63df8db1638fa4f21429673d387dbd1c52a')
+                    b'726e7ae9e3fadf8a2228bf33e505a63df8db1638fa4f21429673d387dbd1c52a')
 
 
 class TestObjectHash(unittest.TestCase):
@@ -99,20 +100,20 @@ class TestObjectHash(unittest.TestCase):
     def test_json(self):
         self.verify(['foo', {'bar': ['baz', None, 1, 1.5, 0.0001, 1000, 2, -23.1234, 2]}],
                     # The same as the equivalent Python JSON object
-                    '726e7ae9e3fadf8a2228bf33e505a63df8db1638fa4f21429673d387dbd1c52a')              
+                    b'726e7ae9e3fadf8a2228bf33e505a63df8db1638fa4f21429673d387dbd1c52a')
     
     def test_set(self):
         self.verify({ 'thing1': { 'thing2': set((1, 2, 's')) }, 'thing3': 1234.567 },
-                    '618cf0582d2e716a70e99c2f3079d74892fec335e3982eb926835967cb0c246c')
+                    b'618cf0582d2e716a70e99c2f3079d74892fec335e3982eb926835967cb0c246c')
 
     def test_complex_set(self):
         # FIXME: OMG!
         self.verify(set(('foo', 23.6, frozenset((frozenset(),)), frozenset((frozenset((1,)),)))),
-                    '3773b0a5283f91243a304d2bb0adb653564573bc5301aa8bb63156266ea5d398')
+                    b'3773b0a5283f91243a304d2bb0adb653564573bc5301aa8bb63156266ea5d398')
 
     def test_zero(self):
-        self.verify(0.0, '60101d8c9cb988411468e38909571f357daa67bff5a7b0a3f9ae295cd4aba33d')
-        self.verify(-0.0, '60101d8c9cb988411468e38909571f357daa67bff5a7b0a3f9ae295cd4aba33d')
+        self.verify(0.0, b'60101d8c9cb988411468e38909571f357daa67bff5a7b0a3f9ae295cd4aba33d')
+        self.verify(-0.0, b'60101d8c9cb988411468e38909571f357daa67bff5a7b0a3f9ae295cd4aba33d')
 
 
 class TestRedaction(unittest.TestCase):
@@ -127,33 +128,33 @@ class TestRedaction(unittest.TestCase):
 
     def test_common(self):
         self.verify(['foo', 'bar'],
-                    '32ae896c413cfdc79eec68be9139c86ded8b279238467c216cf2bec4d5f1e4a2')
+                    b'32ae896c413cfdc79eec68be9139c86ded8b279238467c216cf2bec4d5f1e4a2')
         self.verify('bar',
-                    'e303ce0bd0f4c1fdfe4cc1e837d7391241e2e047df10fa6101733dc120675dfe')
+                    b'e303ce0bd0f4c1fdfe4cc1e837d7391241e2e047df10fa6101733dc120675dfe')
         self.verify(['foo', objecthash.Redacted('e303ce0bd0f4c1fdfe4cc1e837d7391241e2e047df10fa6101733dc120675dfe')],
-                    '32ae896c413cfdc79eec68be9139c86ded8b279238467c216cf2bec4d5f1e4a2')
+                    b'32ae896c413cfdc79eec68be9139c86ded8b279238467c216cf2bec4d5f1e4a2')
 
     def test_common_json(self):
         self.verify_json('["foo", "**REDACTED**e303ce0bd0f4c1fdfe4cc1e837d7391241e2e047df10fa6101733dc120675dfe"]',
-                         '32ae896c413cfdc79eec68be9139c86ded8b279238467c216cf2bec4d5f1e4a2')
+                         b'32ae896c413cfdc79eec68be9139c86ded8b279238467c216cf2bec4d5f1e4a2')
 
     def test_float_and_int(self):
         self.verify_json('{"bar":["baz", null, 1.0, 1.5, 0.0001, 1000.0, 2.0, -23.1234, 2.0]}',
-                         '96e2aab962831956c80b542f056454be411f870055d37805feb3007c855bd823')
+                         b'96e2aab962831956c80b542f056454be411f870055d37805feb3007c855bd823')
         self.verify_json('["foo", "**REDACTED**96e2aab962831956c80b542f056454be411f870055d37805feb3007c855bd823"]',
-                         '783a423b094307bcb28d005bc2f026ff44204442ef3513585e7e73b66e3c2213')
+                         b'783a423b094307bcb28d005bc2f026ff44204442ef3513585e7e73b66e3c2213')
 
         self.verify_json('["foo", {"bar":["baz", null, 1.0, 1.5, 0.0001, 1000.0, 2.0, -23.1234, 2.0]}]',
-                         '783a423b094307bcb28d005bc2f026ff44204442ef3513585e7e73b66e3c2213')
+                         b'783a423b094307bcb28d005bc2f026ff44204442ef3513585e7e73b66e3c2213')
 
-        self.verify_json('"baz"', '82f70430fa7b78951b3c4634d228756a165634df977aa1fada051d6828e78f30')
-        self.verify_json('0.0001', '1195afc7f0b70bb9d7960c3615668e072a1cbfbbb001f84871fd2e222a87be1d')
+        self.verify_json('"baz"', b'82f70430fa7b78951b3c4634d228756a165634df977aa1fada051d6828e78f30')
+        self.verify_json('0.0001', b'1195afc7f0b70bb9d7960c3615668e072a1cbfbbb001f84871fd2e222a87be1d')
         self.verify_json('["foo", {"bar": ["**REDACTED**82f70430fa7b78951b3c4634d228756a165634df977aa1fada051d6828e78f30", null, 1.0, 1.5, "**REDACTED**1195afc7f0b70bb9d7960c3615668e072a1cbfbbb001f84871fd2e222a87be1d", 1000.0, 2.0, -23.1234, 2.0]}]',
-                         '783a423b094307bcb28d005bc2f026ff44204442ef3513585e7e73b66e3c2213')
+                         b'783a423b094307bcb28d005bc2f026ff44204442ef3513585e7e73b66e3c2213')
 
-        self.verify_json('"bar"', 'e303ce0bd0f4c1fdfe4cc1e837d7391241e2e047df10fa6101733dc120675dfe')
+        self.verify_json('"bar"', b'e303ce0bd0f4c1fdfe4cc1e837d7391241e2e047df10fa6101733dc120675dfe')
         self.verify_json('["foo", {"**REDACTED**e303ce0bd0f4c1fdfe4cc1e837d7391241e2e047df10fa6101733dc120675dfe": ["baz", null, 1.0, 1.5, 0.0001, 1000.0, 2.0, -23.1234, 2.0]}]',
-                         '783a423b094307bcb28d005bc2f026ff44204442ef3513585e7e73b66e3c2213')
+                         b'783a423b094307bcb28d005bc2f026ff44204442ef3513585e7e73b66e3c2213')
 
 
 class TestRedactable(unittest.TestCase):
@@ -168,14 +169,14 @@ class TestRedactable(unittest.TestCase):
     def test_fidelity(self):
         t = objecthash.redactable(['foo', 'bar'])
         self.unverify(t,
-                      '32ae896c413cfdc79eec68be9139c86ded8b279238467c216cf2bec4d5f1e4a2')
+                      b'32ae896c413cfdc79eec68be9139c86ded8b279238467c216cf2bec4d5f1e4a2')
         self.verify(objecthash.unredactable(t),
-                    '32ae896c413cfdc79eec68be9139c86ded8b279238467c216cf2bec4d5f1e4a2')
+                    b'32ae896c413cfdc79eec68be9139c86ded8b279238467c216cf2bec4d5f1e4a2')
         t = objecthash.redactable(set(('foo', 23, 1.5, None)))
         self.unverify(t,
-                      '32ae896c413cfdc79eec68be9139c86ded8b279238467c216cf2bec4d5f1e4a2')
+                      b'32ae896c413cfdc79eec68be9139c86ded8b279238467c216cf2bec4d5f1e4a2')
         self.verify(objecthash.unredactable(t),
-                    '5e9dd60afdd356f015d54b27647c2e3439a45547d1efb526260c306e89de2dba')
+                    b'5e9dd60afdd356f015d54b27647c2e3439a45547d1efb526260c306e89de2dba')
 
 
     def test_redactability(self):
