@@ -161,8 +161,80 @@ func ExampleObjectHash_ComplexSetRepeated() {
 	// Output: 3773b0a5283f91243a304d2bb0adb653564573bc5301aa8bb63156266ea5d398
 }
 
+func ExampleObjectHash_ArraysAndSlices() {
+	a1 := [0]bool{}
+	printObjectHash(a1)
+
+	s1 := []bool{}
+	printObjectHash(s1)
+
+	a2 := [2]string{"Hello", "World!"}
+	printObjectHash(a2)
+
+	s2 := []string{"Hello", "World!"}
+	printObjectHash(s2)
+
+	a3 := [3]int32{-1, 0, 1}
+	printObjectHash(a3)
+
+	s3 := []int32{-1, 0, 1}
+	printObjectHash(s3)
+
+	// Output:
+	// acac86c0e609ca906f632b0e2dacccb2b77d22b0621f20ebece1a4835b93f6f0
+	// acac86c0e609ca906f632b0e2dacccb2b77d22b0621f20ebece1a4835b93f6f0
+	// f68877e4d91514f3216ee7e24a0f271e26977c26f29f7bcb30b1e3e0c1710344
+	// f68877e4d91514f3216ee7e24a0f271e26977c26f29f7bcb30b1e3e0c1710344
+	// 751293c15d3eacceb5643ac61f9c2f5a597378ef4538de8e7f9188feabf76a81
+	// 751293c15d3eacceb5643ac61f9c2f5a597378ef4538de8e7f9188feabf76a81
+}
+
+func ExampleObjectHash_ByteBlobs() {
+	// Empty byte blobs (arrays & slices) will have different hashes from empty lists.
+	ba1 := [0]byte{}
+	printObjectHash(ba1)
+
+	bs1 := []byte{}
+	printObjectHash(bs1)
+
+	ba2 := [2]byte{255, 255}
+	printObjectHash(ba2)
+
+	bs2 := []byte{255, 255}
+	printObjectHash(bs2)
+
+	ba3 := [3]byte{0, 0, 0}
+	printObjectHash(ba3)
+
+	bs3 := []byte{0, 0, 0}
+	printObjectHash(bs3)
+
+	// Output:
+	// 454349e422f05297191ead13e21d3db520e5abef52055e4964b82fb213f593a1
+	// 454349e422f05297191ead13e21d3db520e5abef52055e4964b82fb213f593a1
+	// 43ad246c14bf0bc0b2ac9cab9fae202a181ab4c6abb07fb40cad8c67a4cab8ee
+	// 43ad246c14bf0bc0b2ac9cab9fae202a181ab4c6abb07fb40cad8c67a4cab8ee
+	// d877bf4e5023a6df5262218800a7162e240c84e44696bb2c3ad1c5e756f3dac1
+	// d877bf4e5023a6df5262218800a7162e240c84e44696bb2c3ad1c5e756f3dac1
+}
+
+func ExampleObjectHash_Maps() {
+	m1 := map[string]bool{}
+	printObjectHash(m1)
+
+	m2 := map[int64]string{-1: "Hello", 0: "World!"}
+	printObjectHash(m2)
+
+	m3 := map[bool]int32{true: 1, false: 0}
+	printObjectHash(m3)
+	// Output:
+	// 18ac3e7343f016890c510e93f935261169d9e3f565436429830faf0934f4f8e4
+	// 1909a37b5f94b2b7760fc5f5a76eee66a8907e71ba3281831927c19dfe8c1801
+	// 1eb24844c2bb924515efd56f3310d875a3aeaef54d690186d698bfd926a93322
+}
+
 func ExampleObjectHash_UnsupportedType() {
-	f := func() { }
+	f := func() {}
 	printObjectHash(f)
 	// Output:
 	// Unsupported type: func()

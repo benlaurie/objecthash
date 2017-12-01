@@ -5,6 +5,7 @@ import (
 	"crypto/sha256"
 	"encoding/json"
 	"fmt"
+	"reflect"
 	"sort"
 )
 
@@ -83,7 +84,7 @@ func (h byKHash) Less(i, j int) bool {
 		h[j].khash[:]) < 0
 }
 
-func hashDict(d map[string]interface{}) ([hashLength]byte, error) {
+func hashDict(d map[interface{}]interface{}) ([hashLength]byte, error) {
 	e := make([]hashEntry, len(d))
 	n := 0
 	for k, v := range d {
@@ -159,7 +160,11 @@ func hashFloat(f float64) ([hashLength]byte, error) {
 	return hash(`f`, []byte(normalizedFloat)), nil
 }
 
-func hashInt(i int) [hashLength]byte {
+func hashUint(i uint64) [hashLength]byte {
+	return hash(`i`, []byte(fmt.Sprintf("%d", i)))
+}
+
+func hashInt(i int64) [hashLength]byte {
 	return hash(`i`, []byte(fmt.Sprintf("%d", i)))
 }
 
@@ -171,25 +176,59 @@ func hashBool(b bool) [hashLength]byte {
 	return hash(`b`, bb)
 }
 
+func hashBytes(value reflect.Value) ([hashLength]byte, error) {
+	var b []byte
+	if value.Kind() == reflect.Slice {
+		b = value.Bytes()
+	} else {
+		// The `Bytes()` method only works for slices.
+		b = make([]byte, value.Len())
+		bb := reflect.ValueOf(b)
+		reflect.Copy(bb, value)
+	}
+
+	return hash(`r`, b), nil
+}
+
 // ObjectHash returns the hash of a subset of allowed Go objects.
 func ObjectHash(o interface{}) ([hashLength]byte, error) {
 	switch v := o.(type) {
-	case []interface{}:
-		return hashList(v)
-	case string:
-		return hashUnicode(v), nil
-	case map[string]interface{}:
-		return hashDict(v)
-	case float64:
-		return hashFloat(v)
-	case nil:
-		return hash(`n`, []byte(``)), nil
-	case int:
-		return hashInt(v), nil
 	case Set:
 		return hashSet(v)
-	case bool:
-		return hashBool(v), nil
+	}
+
+	value := reflect.ValueOf(o)
+	switch value.Kind() {
+	case reflect.Invalid: // nil
+		return hash(`n`, []byte(``)), nil
+	case reflect.Slice, reflect.Array:
+		// Check if this is a blob of bytes.
+		if value.Type().Elem() == reflect.TypeOf(byte(0)) {
+			return hashBytes(value)
+		}
+
+		// Otherwise hash it as a list.
+		var anySlice []interface{}
+		for i := 0; i < value.Len(); i++ {
+			anySlice = append(anySlice, value.Index(i).Interface())
+		}
+		return hashList(anySlice)
+	case reflect.String:
+		return hashUnicode(value.String()), nil
+	case reflect.Map:
+		anyMap := make(map[interface{}]interface{})
+		for _, key := range value.MapKeys() {
+			anyMap[key.Interface()] = value.MapIndex(key).Interface()
+		}
+		return hashDict(anyMap)
+	case reflect.Float32, reflect.Float64:
+		return hashFloat(value.Float())
+	case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
+		return hashInt(value.Int()), nil
+	case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64:
+		return hashUint(value.Uint()), nil
+	case reflect.Bool:
+		return hashBool(value.Bool()), nil
 	default:
 		return [hashLength]byte{}, fmt.Errorf("Unsupported type: %T", o)
 	}
