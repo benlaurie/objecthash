@@ -176,6 +176,20 @@ func hashBool(b bool) [hashLength]byte {
 	return hash(`b`, bb)
 }
 
+func hashBytes(value reflect.Value) ([hashLength]byte, error) {
+	var b []byte
+	if value.Kind() == reflect.Slice {
+		b = value.Bytes()
+	} else {
+		// The `Bytes()` method only works for slices.
+		b = make([]byte, value.Len())
+		bb := reflect.ValueOf(b)
+		reflect.Copy(bb, value)
+	}
+
+	return hash(`r`, b), nil
+}
+
 // ObjectHash returns the hash of a subset of allowed Go objects.
 func ObjectHash(o interface{}) ([hashLength]byte, error) {
 	switch v := o.(type) {
@@ -188,6 +202,12 @@ func ObjectHash(o interface{}) ([hashLength]byte, error) {
 	case reflect.Invalid: // nil
 		return hash(`n`, []byte(``)), nil
 	case reflect.Slice, reflect.Array:
+		// Check if this is a blob of bytes.
+		if value.Type().Elem() == reflect.TypeOf(byte(0)) {
+			return hashBytes(value)
+		}
+
+		// Otherwise hash it as a list.
 		var anySlice []interface{}
 		for i := 0; i < value.Len(); i++ {
 			anySlice = append(anySlice, value.Index(i).Interface())

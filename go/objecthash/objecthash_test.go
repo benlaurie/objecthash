@@ -189,6 +189,35 @@ func ExampleObjectHash_ArraysAndSlices() {
 	// 751293c15d3eacceb5643ac61f9c2f5a597378ef4538de8e7f9188feabf76a81
 }
 
+func ExampleObjectHash_ByteBlobs() {
+	// Empty byte blobs (arrays & slices) will have different hashes from empty lists.
+	ba1 := [0]byte{}
+	printObjectHash(ba1)
+
+	bs1 := []byte{}
+	printObjectHash(bs1)
+
+	ba2 := [2]byte{255, 255}
+	printObjectHash(ba2)
+
+	bs2 := []byte{255, 255}
+	printObjectHash(bs2)
+
+	ba3 := [3]byte{0, 0, 0}
+	printObjectHash(ba3)
+
+	bs3 := []byte{0, 0, 0}
+	printObjectHash(bs3)
+
+	// Output:
+	// 454349e422f05297191ead13e21d3db520e5abef52055e4964b82fb213f593a1
+	// 454349e422f05297191ead13e21d3db520e5abef52055e4964b82fb213f593a1
+	// 43ad246c14bf0bc0b2ac9cab9fae202a181ab4c6abb07fb40cad8c67a4cab8ee
+	// 43ad246c14bf0bc0b2ac9cab9fae202a181ab4c6abb07fb40cad8c67a4cab8ee
+	// d877bf4e5023a6df5262218800a7162e240c84e44696bb2c3ad1c5e756f3dac1
+	// d877bf4e5023a6df5262218800a7162e240c84e44696bb2c3ad1c5e756f3dac1
+}
+
 func ExampleObjectHash_Maps() {
 	m1 := map[string]bool{}
 	printObjectHash(m1)
