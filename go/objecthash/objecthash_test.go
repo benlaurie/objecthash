@@ -61,13 +61,16 @@ func ExampleCommonJSONHash_UnicodeNormalisation() {
 }
 */
 
-func printObjectHash(o interface{}) {
-	h, err := ObjectHash(o)
+func printHashOrError(hash [hashLength]byte, err error) {
 	if err == nil {
-		fmt.Printf("%x\n", h)
+		fmt.Printf("%x\n", hash)
 	} else {
 		fmt.Printf("%v\n", err)
 	}
+}
+
+func printObjectHash(o interface{}) {
+	printHashOrError(ObjectHash(o))
 }
 
 func ExampleObjectHash_JSON() {
@@ -209,11 +212,18 @@ func ExampleObjectHash_ByteBlobs() {
 	bs3 := []byte{0, 0, 0}
 	printObjectHash(bs3)
 
+	// byte is a type alias for uint8 and therefore they're indistinguishable at
+	// runtime. This means that uint8 arrays will hash the same way as byte
+	// arrays.
+	ui3 := []uint8{0, 0, 0}
+	printObjectHash(ui3)
+
 	// Output:
 	// 454349e422f05297191ead13e21d3db520e5abef52055e4964b82fb213f593a1
 	// 454349e422f05297191ead13e21d3db520e5abef52055e4964b82fb213f593a1
 	// 43ad246c14bf0bc0b2ac9cab9fae202a181ab4c6abb07fb40cad8c67a4cab8ee
 	// 43ad246c14bf0bc0b2ac9cab9fae202a181ab4c6abb07fb40cad8c67a4cab8ee
+	// d877bf4e5023a6df5262218800a7162e240c84e44696bb2c3ad1c5e756f3dac1
 	// d877bf4e5023a6df5262218800a7162e240c84e44696bb2c3ad1c5e756f3dac1
 	// d877bf4e5023a6df5262218800a7162e240c84e44696bb2c3ad1c5e756f3dac1
 }
@@ -238,6 +248,22 @@ func ExampleObjectHash_UnsupportedType() {
 	printObjectHash(f)
 	// Output:
 	// Unsupported type: func()
+}
+
+func ExampleHashBytes_CalledWithIncorrectTypes() {
+	var v1 bool = true
+	printHashOrError(hashBytes(v1))
+
+	v2 := []int32{0, 1, 2}
+	printHashOrError(hashBytes(v2))
+
+	v3 := [2]uint32{3, 4}
+	printHashOrError(hashBytes(v3))
+
+	// Output:
+	// Assertion error: Expected a byte slice or a bytes array. Instead got type bool
+	// Assertion error: Expected a byte slice or a bytes array. Instead got type []int32
+	// Assertion error: Expected a byte slice or a bytes array. Instead got type [2]uint32
 }
 
 func TestGolden(t *testing.T) {

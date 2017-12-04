@@ -176,8 +176,21 @@ func hashBool(b bool) [hashLength]byte {
 	return hash(`b`, bb)
 }
 
-func hashBytes(value reflect.Value) ([hashLength]byte, error) {
+func hashBytes(o interface{}) ([hashLength]byte, error) {
+	value := reflect.ValueOf(o)
 	var b []byte
+
+	// Check that this is called with a slice or an array.
+	if value.Kind() != reflect.Slice && value.Kind() != reflect.Array {
+		return [hashLength]byte{}, fmt.Errorf("Assertion error: Expected a byte slice or a bytes array. Instead got type %T", o)
+	}
+
+	// Check that the array/slice element type is "byte" (Notice that this is the
+	// same as "uint8").
+	if value.Type().Elem() != reflect.TypeOf(byte(0)) {
+		return [hashLength]byte{}, fmt.Errorf("Assertion error: Expected a byte slice or a bytes array. Instead got type %T", o)
+	}
+
 	if value.Kind() == reflect.Slice {
 		b = value.Bytes()
 	} else {
@@ -204,7 +217,7 @@ func ObjectHash(o interface{}) ([hashLength]byte, error) {
 	case reflect.Slice, reflect.Array:
 		// Check if this is a blob of bytes.
 		if value.Type().Elem() == reflect.TypeOf(byte(0)) {
-			return hashBytes(value)
+			return hashBytes(o)
 		}
 
 		// Otherwise hash it as a list.
