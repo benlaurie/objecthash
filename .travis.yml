@@ -6,7 +6,7 @@ matrix:
   fast_finish: true
   include:
   - language: go
-    go: 1.9
+    go: 1.9.x
     script:
     - cd go
     - go test -v ./...
