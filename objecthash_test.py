@@ -114,6 +114,11 @@ class TestObjectHash(unittest.TestCase):
         self.verify(0.0, '60101d8c9cb988411468e38909571f357daa67bff5a7b0a3f9ae295cd4aba33d')
         self.verify(-0.0, '60101d8c9cb988411468e38909571f357daa67bff5a7b0a3f9ae295cd4aba33d')
 
+    def test_float_special_values(self):
+        self.verify(float("nan"), '5d6c301a98d835732d459d7018a8d546872f7ba3c39a45ba481746d2c6d566d9')
+        self.verify(float("inf"), 'e0309b2362dc6aaf595338cd9e116761640f74927bcdc4f76e8e6433738f25c7')
+        self.verify(float("-inf"), '1167518d5554ba86d9b176af0a57f29d425bedaa9847c245cc397b37533228f7')
+
 
 class TestRedaction(unittest.TestCase):
     def verify(self, o, e):

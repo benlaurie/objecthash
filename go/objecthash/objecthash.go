@@ -5,6 +5,7 @@ import (
 	"crypto/sha256"
 	"encoding/json"
 	"fmt"
+	"math"
 	"reflect"
 	"sort"
 )
@@ -153,10 +154,23 @@ func floatNormalize(originalFloat float64) (s string, err error) {
 }
 
 func hashFloat(f float64) ([hashLength]byte, error) {
-	normalizedFloat, err := floatNormalize(f)
-	if err != nil {
-		return [hashLength]byte{}, err
+	var normalizedFloat string
+
+	switch {
+	case math.IsInf(f, 1):
+		normalizedFloat = "Infinity"
+	case math.IsInf(f, -1):
+		normalizedFloat = "-Infinity"
+	case math.IsNaN(f):
+		normalizedFloat = "NaN"
+	default:
+		var err error
+		normalizedFloat, err = floatNormalize(f)
+		if err != nil {
+			return [hashLength]byte{}, err
+		}
 	}
+
 	return hash(`f`, []byte(normalizedFloat)), nil
 }
 

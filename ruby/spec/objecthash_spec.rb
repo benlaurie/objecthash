@@ -214,6 +214,10 @@ RSpec.describe ObjectHash do
         expect(described_class.hexdigest(1000.0)).to eq "09b29bf3f8bea85fbf7dd5b3e185e9c3a007761f8824a54d4d518578c9360419"
         expect(described_class.hexdigest(1.2345)).to eq "844e08b1195a93563db4e5d4faa59759ba0e0397caf065f3b6bc0825499754e0"
         expect(described_class.hexdigest(-10.1234)).to eq "59b49ae24998519925833e3ff56727e5d4868aba4ecf4c53653638ebff53c366"
+        # Special values.
+        expect(described_class.hexdigest(Float::NAN)).to eq "5d6c301a98d835732d459d7018a8d546872f7ba3c39a45ba481746d2c6d566d9"
+        expect(described_class.hexdigest(Float::INFINITY)).to eq "e0309b2362dc6aaf595338cd9e116761640f74927bcdc4f76e8e6433738f25c7"
+        expect(described_class.hexdigest(-Float::INFINITY)).to eq "1167518d5554ba86d9b176af0a57f29d425bedaa9847c245cc397b37533228f7"
       end
     end
   end

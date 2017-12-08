@@ -3,6 +3,7 @@ package objecthash
 import (
 	"bufio"
 	"fmt"
+	"math"
 	"os"
 	"testing"
 )
@@ -231,6 +232,21 @@ func ExampleObjectHash_Maps() {
 	// 18ac3e7343f016890c510e93f935261169d9e3f565436429830faf0934f4f8e4
 	// 1909a37b5f94b2b7760fc5f5a76eee66a8907e71ba3281831927c19dfe8c1801
 	// 1eb24844c2bb924515efd56f3310d875a3aeaef54d690186d698bfd926a93322
+}
+
+func ExampleObjectHash_SpecialFloatValues() {
+	nan := math.NaN()
+	printObjectHash(nan)
+
+	pinf := math.Inf(1)
+	printObjectHash(pinf)
+
+	ninf := math.Inf(-1)
+	printObjectHash(ninf)
+	// Output:
+	// 5d6c301a98d835732d459d7018a8d546872f7ba3c39a45ba481746d2c6d566d9
+	// e0309b2362dc6aaf595338cd9e116761640f74927bcdc4f76e8e6433738f25c7
+	// 1167518d5554ba86d9b176af0a57f29d425bedaa9847c245cc397b37533228f7
 }
 
 func ExampleObjectHash_UnsupportedType() {

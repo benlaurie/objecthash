@@ -1,5 +1,6 @@
 import json
 import hashlib
+import math
 import random
 import types
 import unicodedata
@@ -88,7 +89,12 @@ def float_normalize(f):
     return s
 
 def obj_hash_float(f):
-    return hash_primitive('f', float_normalize(f))
+    if math.isnan(f):
+        return hash_primitive('f', 'NaN')
+    elif math.isinf(f):
+        return hash_primitive('f', 'Infinity' if f > 0 else '-Infinity')
+    else:
+        return hash_primitive('f', float_normalize(f))
 
 def obj_hash_int(i):
     return hash_primitive('i', str(i))

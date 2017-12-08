@@ -1,9 +1,12 @@
-.PHONY: test go_test python c java go_deps
+.PHONY: test go_test ruby python c java go_deps
 
-test: c go_test python java
+test: c go_test ruby python java
 
 go_test: go_deps
 	GOPATH=`pwd` go test -v go/objecthash/objecthash.go go/objecthash/objecthash_test.go
+
+ruby:
+	cd ruby && rake
 
 python:
 	python objecthash_test.py
