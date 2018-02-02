@@ -129,7 +129,13 @@ class ObjectHash
   # rubocop:enable Metrics/CyclomaticComplexity
 
   def obj_hash_float(f)
-    hash_primitive("f", float_normalize(f))
+    if f.nan?
+      hash_primitive("f", "NaN")
+    elsif f.infinite?
+      hash_primitive("f", f.positive? ? "Infinity" : "-Infinity")
+    else
+      hash_primitive("f", float_normalize(f))
+    end
   end
 
   def obj_hash_int(i)
