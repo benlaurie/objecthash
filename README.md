@@ -31,6 +31,10 @@ Take a look at `objecthash_test.*`.
 
 Comments/bugs/patches welcome.
 
+## Help and Discussion
+
+[Google Group](https://groups.google.com/forum/#!forum/objecthash)
+
 ## What's it good for?
 
 ### Signing and verification
