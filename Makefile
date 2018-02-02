@@ -3,7 +3,7 @@
 test: c go_test python java
 
 go_test: go_deps
-	GOPATH=`pwd` go test -v go/objecthash/objecthash.go go/objecthash/objecthash_test.go
+	GOPATH=`pwd` go test -timeout 1m -v go/objecthash/objecthash.go go/objecthash/objecthash_test.go
 
 python:
 	python objecthash_test.py

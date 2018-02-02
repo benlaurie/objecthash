@@ -112,6 +112,12 @@ func hashDict(d map[interface{}]interface{}) ([hashLength]byte, error) {
 }
 
 func floatNormalize(originalFloat float64) (s string, err error) {
+	// Special case 0
+	// Note that if we allowed f to end up > .5 or == 0, we'd get the same thing.
+	if originalFloat == 0 {
+		return "+0:", nil
+	}
+
 	// sign
 	f := originalFloat
 	s = `+`
