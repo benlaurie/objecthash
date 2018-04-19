@@ -1,6 +1,8 @@
 .PHONY: test go_test ruby python c java go_deps
 
-test: c go_test ruby python java
+PKG_CONFIG_PATH=/usr/local/opt/icu4c/lib/pkgconfig
+
+test: c ruby go_test python java
 
 go_test: go_deps
 	GOPATH=`pwd` go test -timeout 1m -v go/objecthash/objecthash.go go/objecthash/objecthash_test.go
@@ -15,9 +17,8 @@ c: objecthash_test
 	./objecthash_test
 
 java:
-# FIXME: sbt seems to not work with JDK 1.9.1
-#	sbt compile
-#	sbt test
+	sbt compile
+	sbt test
 
 objecthash_test: libobjecthash.so objecthash_test.c
 	$(CC) -std=c99 -Wall -Werror -Wextra -o objecthash_test objecthash_test.c -lobjecthash -L. -Wl,-rpath -Wl,. `pkg-config --libs --cflags icu-uc json-c openssl`

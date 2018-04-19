@@ -4,11 +4,9 @@ import java.nio.ByteBuffer;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
-import java.util.TreeSet;
 import java.util.logging.Logger;
 
 import org.json.JSONArray;
@@ -20,6 +18,7 @@ import org.json.JSONTokener;
  * TODO(phad): docs.
  */
 public class ObjectHash implements Comparable<ObjectHash> {
+
   private static final int SHA256_BLOCK_SIZE = 32;
   private static final String SHA256 = "SHA-256";
   private static final Logger LOG = Logger.getLogger(ObjectHash.class.getName());
@@ -32,10 +31,12 @@ public class ObjectHash implements Comparable<ObjectHash> {
     ARRAY,
     OBJECT,
     INT,
+    LONG,
     FLOAT,
     STRING,
     NULL,
-    UNKNOWN
+    UNKNOWN,
+    REDACTED,;
   }
 
   private ObjectHash() throws NoSuchAlgorithmException {
@@ -57,7 +58,11 @@ public class ObjectHash implements Comparable<ObjectHash> {
         break;
       }
       case INT: {
-        hashInteger(obj);
+        hashDouble(((Integer) obj).doubleValue());
+        break;
+      }
+      case LONG: {
+        hashDouble(((Long) obj).doubleValue());
         break;
       }
       case STRING: {
@@ -76,6 +81,10 @@ public class ObjectHash implements Comparable<ObjectHash> {
         hashDouble((Double) obj);
         break;
       }
+      case REDACTED: {
+        hash = Redacted.fromString((String) obj).hash();
+        break;
+      }
       default: {
         throw new IllegalArgumentException("Illegal type in JSON: "
                                            + obj.getClass());
@@ -84,33 +93,32 @@ public class ObjectHash implements Comparable<ObjectHash> {
 
   }
 
-  private void hashTaggedBytes(char tag, byte[] bytes)
-      throws NoSuchAlgorithmException {
+  private void hashTaggedBytes(char tag, byte[] bytes) {
     digester.reset();
     digester.update((byte) tag);
     digester.update(bytes);
     hash = digester.digest();
   }
 
-  private void hashString(String str) throws NoSuchAlgorithmException {
+  private void hashString(String str) {
     hashTaggedBytes('u', str.getBytes());
   }
 
-  private void hashInteger(Object value) throws NoSuchAlgorithmException {
+  private void hashInteger(Object value) {
     String str = value.toString();
     hashTaggedBytes('i', str.getBytes());
   }
 
-  private void hashDouble(Double value) throws NoSuchAlgorithmException {
+  private void hashDouble(Double value) {
     String normalized = normalizeFloat(value);
     hashTaggedBytes('f', normalized.getBytes());
   }
 
-  private void hashNull() throws NoSuchAlgorithmException {
+  private void hashNull() {
     hashTaggedBytes('n', "".getBytes());
   }
 
-  private void hashBoolean(boolean bool) throws NoSuchAlgorithmException {
+  private void hashBoolean(boolean bool) {
     hashTaggedBytes('b', (bool ? "1" : "0").getBytes());
   }
 
@@ -137,17 +145,17 @@ public class ObjectHash implements Comparable<ObjectHash> {
 
   private void hashObject(JSONObject obj) throws NoSuchAlgorithmException, 
                                                  JSONException {
-    List<ByteBuffer> buffers = new ArrayList<ByteBuffer>();
+    List<ByteBuffer> buffers = new ArrayList<>();
     Comparator<ByteBuffer> ordering = new Comparator<ByteBuffer>() {
         @Override
         public int compare(ByteBuffer left, ByteBuffer right) {
           return toHex(left.array()).compareTo(toHex(right.array()));
         }
     };
-    Iterator<String> keys = obj.keys();
+    Iterator keys = obj.keys();
     while (keys.hasNext()) {
       ByteBuffer buff = ByteBuffer.allocate(2 * SHA256_BLOCK_SIZE);
-      String key = keys.next();
+      String key = (String) keys.next();
       // TODO(phad): would be nice to chain all these calls builder-stylee.
       ObjectHash hKey = new ObjectHash();
       hKey.hashString(key);
@@ -157,7 +165,7 @@ public class ObjectHash implements Comparable<ObjectHash> {
       buff.put(hVal.hash());
       buffers.add(buff);
     }
-    Collections.sort(buffers, ordering);
+    buffers.sort(ordering);
     digester.reset();
     digester.update((byte) 'd');
     for (ByteBuffer buff : buffers) {
@@ -198,9 +206,15 @@ public class ObjectHash implements Comparable<ObjectHash> {
     } else if (jsonObj instanceof JSONObject) {
       return JsonType.OBJECT;
     } else if (jsonObj instanceof String) {
+      String val = (String) jsonObj;
+      if (val.startsWith(Redacted.PREFIX)) {
+        return JsonType.REDACTED;
+      }
       return JsonType.STRING;
-    } else if (jsonObj instanceof Integer || jsonObj instanceof Long) {
+    } else if (jsonObj instanceof Integer) {
       return JsonType.INT;
+    } else if (jsonObj instanceof Long) {
+      return JsonType.LONG;
     } else if (jsonObj instanceof Double) {
       return JsonType.FLOAT;
     } else if (jsonObj instanceof Boolean) {
@@ -212,13 +226,12 @@ public class ObjectHash implements Comparable<ObjectHash> {
   }
 
   public static ObjectHash commonJsonHash(String json)
-      throws JSONException, NoSuchAlgorithmException {
+      throws NoSuchAlgorithmException {
     // TODO(phad): implement 'commonizing' of JSON values.
     return new ObjectHash();
   }
 
-  public static ObjectHash pythonJsonHash(String json)
-      throws JSONException, NoSuchAlgorithmException {
+  public static ObjectHash pythonJsonHash(String json) throws NoSuchAlgorithmException, JSONException {
     ObjectHash h = new ObjectHash();
     h.hashAny(new JSONTokener(json).nextValue());
     return h;
