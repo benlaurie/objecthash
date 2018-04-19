@@ -1,19 +1,20 @@
 package org.links.objecthash;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
-
-import java.nio.charset.Charset;
-import java.nio.file.Files;
-import java.nio.file.FileSystems;
-import java.nio.file.Path;
-import java.util.Iterator;
-import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 import org.json.JSONException;
 import org.junit.Test;
+
+import java.nio.charset.Charset;
+import java.nio.file.FileSystems;
+import java.nio.file.Files;
+import java.security.NoSuchAlgorithmException;
+import java.text.MessageFormat;
+import java.util.Iterator;
+import java.util.List;
+import java.util.logging.Logger;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 public class ObjectHashTest {
   private static final Logger LOG = Logger.getLogger(ObjectHashTest.class.getName());
@@ -28,17 +29,17 @@ public class ObjectHashTest {
   @Test
   public void test32BitIntegers() throws Exception {
     runTest("[123]",
-        "1b93f704451e1a7a1b8c03626ffcd6dec0bc7ace947ff60d52e1b69b4658ccaa");
+        "2e72db006266ed9cdaa353aa22b9213e8a3c69c838349437c06896b1b34cee36");
     runTest("[1, 2, 3]",
-        "157bf16c70bd4c9673ffb5030552df0ee2c40282042ccdf6167850edc9044ab7");
+        "925d474ac71f6e8cb35dd951d123944f7cabc5cda9a043cf38cd638cc0158db0");
   }
 
   @Test
   public void test64BitIntegers() throws Exception {
     runTest("[123456789012345]",
-        "3488b9bc37cce8223a032760a9d4ef488cdfebddd9e1af0b31fcd1d7006369a4");
+        "f446de5475e2f24c0a2b0cd87350927f0a2870d1bb9cbaa794e789806e4c0836");
     runTest("[123456789012345, 678901234567890]",
-        "031ef1aaeccea3bced3a1c6237a4fc00ed4d629c9511922c5a3f4e5c128b0ae4");
+        "d4cca471f1c68f62fbc815b88effa7e52e79d110419a7c64c1ebb107b07f7f56");
   }
 
   @Test
@@ -51,7 +52,7 @@ public class ObjectHashTest {
       String line;
       do {
         line = iter.next();
-      } while (line.isEmpty() || line.startsWith("#"));
+      } while (line.isEmpty() || line.startsWith("#") || line.startsWith("~#"));
       String json = line;
       if (!iter.hasNext()) break;
       String hash = iter.next();
@@ -107,4 +108,24 @@ public class ObjectHashTest {
       assertEquals(hexPair[1], ObjectHash.fromHex(hexPair[0]).toHex());
     }
   }
+
+  @Test
+  public void testHashRedaction() throws JSONException, NoSuchAlgorithmException {
+    String jsonPart = "{\"field1\": \"value\", \"field2\": \"value2\"}";
+
+    ObjectHash partHash = ObjectHash.pythonJsonHash(jsonPart);
+
+    String jsonFull = MessageFormat.format("'{'\"field3\": \"value3\", \"part\": {0}'}'", jsonPart);
+    String jsonFullWithRedacted = MessageFormat.format("'{'\"field3\": \"value3\", \"part\": {0}'}'", new Redacted(partHash));
+
+    assertTrue(jsonFullWithRedacted.contains(partHash.toString()));
+
+    ObjectHash fullHash = ObjectHash.pythonJsonHash(jsonFull);
+    ObjectHash fullWithRedactedHash = ObjectHash.pythonJsonHash(jsonFullWithRedacted);
+
+    assertEquals(fullHash, fullWithRedactedHash);
+  }
+
+
+
 }

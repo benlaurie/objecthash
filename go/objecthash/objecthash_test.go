@@ -271,7 +271,7 @@ func TestGolden(t *testing.T) {
 				return
 			}
 			j = s.Text()
-			if len(j) != 0 && j[0] != '#' {
+			if len(j) != 0 && j[0] != '#' && j[0] != '~' {
 				break
 			}
 		}
