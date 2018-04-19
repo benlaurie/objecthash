@@ -42,7 +42,7 @@ class TestCommonJSONHash(unittest.TestCase):
             while True:
                 while True:
                     j = f.readline()
-                    if not j or (not j.startswith('#') and j[0] != '\n'):
+                    if not j or (not j.startswith('#') and not j.startswith('~') and j[0] != '\n'):
                         break
                 if not j:
                     break

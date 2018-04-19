@@ -3,7 +3,28 @@
 *.swp
 *.so
 pkg/
-src/
 # made by sbt
 project/
 objecthash_test
+
+# OSX
+.DS_Store
+
+# IDE
+.idea
+*.iml
+
+# Maven
+.mvn
+
+*.class
+out/
+target/
+
+# Package Files #
+*.jar
+*.war
+*.ear
+*.zip
+*.tar.gz
+*.rar
