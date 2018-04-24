@@ -1,13 +1,12 @@
 package org.links.objecthash;
 
 import org.json.JSONException;
-import org.json.JSONTokener;
 
 import java.security.NoSuchAlgorithmException;
 
 // TODO: should just extend ObjectHash probably
 public class Redacted extends ObjectHash {
-    static final String PREFIX = "**REDACTED**";
+    public static final String PREFIX = "**REDACTED**";
 
     protected Redacted(byte[] hash) throws NoSuchAlgorithmException {
         super();
