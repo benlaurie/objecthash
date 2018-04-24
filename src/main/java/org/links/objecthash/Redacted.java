@@ -1,26 +1,32 @@
 package org.links.objecthash;
 
+import org.json.JSONException;
+import org.json.JSONTokener;
+
 import java.security.NoSuchAlgorithmException;
 
 // TODO: should just extend ObjectHash probably
-public class Redacted {
-  static final String PREFIX = "**REDACTED**";
-  private ObjectHash hash;
+public class Redacted extends ObjectHash {
+    static final String PREFIX = "**REDACTED**";
 
-  public Redacted(ObjectHash hash) {
-    this.hash = hash;
-  }
+    protected Redacted(byte[] hash) throws NoSuchAlgorithmException {
+        super();
+        this.hash = hash;
+    }
 
-  public static Redacted fromString(String repesentation) throws NoSuchAlgorithmException {
-    return new Redacted(ObjectHash.fromHex(repesentation.replace(PREFIX, "")));
-  }
+    public static Redacted fromString(String repesentation) throws NoSuchAlgorithmException {
+        ObjectHash underlyingHash = ObjectHash.fromHex(repesentation.replace(PREFIX, ""));
+        return new Redacted(underlyingHash.hash());
+    }
 
-  public byte[] hash() {
-    return this.hash.hash();
-  }
+    @Override
+    public String toString() {
+        return String.format("%s%s", PREFIX, super.toString());
+    }
 
-  @Override
-  public String toString() {
-    return String.format("%s%s", PREFIX, hash.toString());
-  }
+    public static Redacted pythonJsonHash(String json) throws NoSuchAlgorithmException, JSONException {
+        ObjectHash h = ObjectHash.pythonJsonHash(json);
+        return new Redacted(h.hash());
+    }
+
 }
