@@ -55,6 +55,12 @@ public class ObjectHash implements Comparable<ObjectHash> {
         return h;
     }
 
+    public static ObjectHash fromBytes(byte[] hash) throws NoSuchAlgorithmException {
+        ObjectHash h = new ObjectHash();
+        h.hash = hash;
+        return h;
+    }
+
     private static JsonType getType(Object jsonObj) {
         if (jsonObj == JSONObject.NULL) {
             return JsonType.NULL;
