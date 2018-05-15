@@ -28,4 +28,8 @@ public class Redacted extends ObjectHash {
         return new Redacted(h.hash());
     }
 
+    public static Redacted fromBytes(byte[] hash) throws NoSuchAlgorithmException {
+        return new Redacted(hash);
+    }
+
 }
