@@ -1,0 +1,13 @@
+platform :ios, '8.0'
+use_frameworks!
+
+target 'ObjectHash' do
+  pod 'CryptoSwift'
+
+  target 'ObjectHashTests' do
+    inherit! :search_paths
+  end
+end
+
+
+
