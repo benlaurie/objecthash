@@ -1,0 +1,71 @@
+## -*- coding: utf-8 -*-
+
+# Lists with strings
+[]
+acac86c0e609ca906f632b0e2dacccb2b77d22b0621f20ebece1a4835b93f6f0
+["foo"]
+268bc27d4974d9d576222e4cdbb8f7c6bd6791894098645a19eeca9c102d0964
+["foo", "bar"]
+32ae896c413cfdc79eec68be9139c86ded8b279238467c216cf2bec4d5f1e4a2
+
+# Lists with ints
+[123]
+2e72db006266ed9cdaa353aa22b9213e8a3c69c838349437c06896b1b34cee36
+[1, 2, 3]
+925d474ac71f6e8cb35dd951d123944f7cabc5cda9a043cf38cd638cc0158db0
+[123456789012345]
+f446de5475e2f24c0a2b0cd87350927f0a2870d1bb9cbaa794e789806e4c0836
+[123456789012345, 678901234567890]
+d4cca471f1c68f62fbc815b88effa7e52e79d110419a7c64c1ebb107b07f7f56
+
+# Objects with (lists of) strings
+{}
+18ac3e7343f016890c510e93f935261169d9e3f565436429830faf0934f4f8e4
+{"foo": "bar"}
+7ef5237c3027d6c58100afadf37796b3d351025cf28038280147d42fdc53b960
+{"foo": ["bar", "baz"], "qux": ["norf"]}
+f1a9389f27558538a064f3cc250f8686a0cebb85f1cab7f4d4dcc416ceda3c92
+
+# Null values
+[null]
+5fb858ed3ef4275e64c2d5c44b77534181f7722b7765288e76924ce2f9f7f7db
+
+# Boolean primitives
+true
+7dc96f776c8423e57a2785489a3f9c43fb6e756876d6ad9a9cac4aa4e72ec193
+false
+c02c0b965e023abee808f2b548d8d5193a8b5229be6f3121a6f16e2d41a449b3
+
+# Floating point
+0.0
+60101d8c9cb988411468e38909571f357daa67bff5a7b0a3f9ae295cd4aba33d
+1.2345
+844e08b1195a93563db4e5d4faa59759ba0e0397caf065f3b6bc0825499754e0
+-10.1234
+59b49ae24998519925833e3ff56727e5d4868aba4ecf4c53653638ebff53c366
+
+# Mixture of all types
+["foo", {"bar": ["baz", null, 1.0, 1.5, 0.0001, 1000.0, 2.0, -23.1234, 2.0]}]
+783a423b094307bcb28d005bc2f026ff44204442ef3513585e7e73b66e3c2213
+# Integers and floats are the same in common JSON
+["foo", {"bar": ["baz", null, 1, 1.5, 0.0001, 1000, 2, -23.1234, 2]}]
+783a423b094307bcb28d005bc2f026ff44204442ef3513585e7e73b66e3c2213
+# changing just a key changes the hash
+["foo", {"b4r": ["baz", null, 1, 1.5, 0.0001, 1000, 2, -23.1234, 2]}]
+7e01f8b45da35386e4f9531ff1678147a215b8d2b1d047e690fd9ade6151e431
+
+# Test order independence
+{"k1": "v1", "k2": "v2", "k3": "v3"}
+ddd65f1f7568269a30df7cafc26044537dc2f02a1a0d830da61762fc3e687057
+{"k2": "v2", "k1": "v1", "k3": "v3"}
+ddd65f1f7568269a30df7cafc26044537dc2f02a1a0d830da61762fc3e687057
+
+# Unicode
+"ԱԲաբ"
+2a2a4485a4e338d8df683971956b1090d2f5d33955a81ecaad1a75125f7a316c
+"\u03d3"
+f72826713a01881404f34975447bd6edcb8de40b191dc57097ebf4f5417a554d
+# Note that this is the same character as above, but hashes differently unless
+# unicode normalisation is applied
+"\u03d2\u0301"
+42d5b13fb064849a988a86eb7650a22881c0a9ecf77057a1b07ab0dad385889c
