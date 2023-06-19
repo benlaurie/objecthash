@@ -2,7 +2,7 @@
 
 test: c go_test ruby python java
 
-go_test: go_deps
+go_test:
 	go test -timeout 1m -v go/objecthash/objecthash.go go/objecthash/objecthash_test.go
 
 ruby:
@@ -24,6 +24,3 @@ objecthash_test: libobjecthash.so objecthash_test.c
 
 libobjecthash.so: objecthash.c
 	$(CC) -fPIC -shared -std=c99 -Wall -Werror -Wextra -o libobjecthash.so objecthash.c -lcrypto `pkg-config --libs --cflags icu-uc json-c openssl`
-
-go_deps:
-	go get golang.org/x/text/unicode/norm
