@@ -139,7 +139,7 @@ func floatNormalize(originalFloat float64) (s string, err error) {
 	s += fmt.Sprintf("%d:", e)
 	// mantissa
 	if f > 1 || f <= .5 {
-		return "", fmt.Errorf("Could not normalize float: %f", originalFloat)
+		return "", fmt.Errorf("could not normalize float: %f", originalFloat)
 	}
 	for f != 0 {
 		if f >= 1 {
@@ -149,10 +149,10 @@ func floatNormalize(originalFloat float64) (s string, err error) {
 			s += `0`
 		}
 		if f >= 1 {
-			return "", fmt.Errorf("Could not normalize float: %f", originalFloat)
+			return "", fmt.Errorf("could not normalize float: %f", originalFloat)
 		}
 		if len(s) >= 1000 {
-			return "", fmt.Errorf("Could not normalize float: %f", originalFloat)
+			return "", fmt.Errorf("could not normalize float: %f", originalFloat)
 		}
 		f *= 2
 	}
