@@ -19,12 +19,12 @@ func commonJSON(j string) {
 	}
 }
 
-func ExampleCommonJSONHash_Common() {
+func Example_commonJSON_HashCommon() {
 	commonJSON(`["foo", "bar"]`)
 	// Output: 32ae896c413cfdc79eec68be9139c86ded8b279238467c216cf2bec4d5f1e4a2
 }
 
-func ExampleCommonJSONHash_FloatAndInt() {
+func Example_commonJSONHash_FloatAndInt() {
 	commonJSON(`["foo", {"bar":["baz", null, 1.0, 1.5, 0.0001, 1000.0, 2.0, -23.1234, 2.0]}]`)
 	// Integers and floats are the same in common JSON
 	commonJSON(`["foo", {"bar":["baz", null, 1, 1.5, 0.0001, 1000, 2, -23.1234, 2]}]`)
@@ -33,12 +33,12 @@ func ExampleCommonJSONHash_FloatAndInt() {
 	// 783a423b094307bcb28d005bc2f026ff44204442ef3513585e7e73b66e3c2213
 }
 
-func ExampleCommonJSONHash_KeyChange() {
+func Example_commonJSONHash_KeyChange() {
 	commonJSON(`["foo", {"b4r":["baz", null, 1, 1.5, 0.0001, 1000, 2, -23.1234, 2]}]`)
 	// Output: 7e01f8b45da35386e4f9531ff1678147a215b8d2b1d047e690fd9ade6151e431
 }
 
-func ExampleCommonJSONHash_KeyOrderIndependence() {
+func Example_commonJSONHash_KeyOrderIndependence() {
 	commonJSON(`{"k1":"v1","k2":"v2","k3":"v3"}`)
 	commonJSON(`{"k2":"v2","k1":"v1","k3":"v3"}`)
 	// Output:
@@ -46,14 +46,14 @@ func ExampleCommonJSONHash_KeyOrderIndependence() {
 	// ddd65f1f7568269a30df7cafc26044537dc2f02a1a0d830da61762fc3e687057
 }
 
-func ExampleCommonJSONHash_InvalidJson() {
+func Example_commonJSONHash_InvalidJson() {
 	commonJSON(`["foo", bar]`)
 	// Output:
 	// invalid character 'b' looking for beginning of value
 }
 
 /*
-func ExampleCommonJSONHash_UnicodeNormalisation() {
+func Example_commonJSONHash_UnicodeNormalisation() {
 	commonJSON("\"\u03d3\"")
 	commonJSON("\"\u03d2\u0301\"")
 	// Output:
@@ -71,7 +71,7 @@ func printObjectHash(o interface{}) {
 	}
 }
 
-func ExampleObjectHash_JSON() {
+func Example_printObjectHash_JSON() {
 	// Same as equivalent JSON object
 	o := []interface{}{`foo`, `bar`}
 	printObjectHash(o)
@@ -87,7 +87,7 @@ func ExampleObjectHash_JSON() {
 	// 32ae896c413cfdc79eec68be9139c86ded8b279238467c216cf2bec4d5f1e4a2
 }
 
-func ExampleObjectHash_JSON2() {
+func Example_printObjectHash_JSON2() {
 	// Same as equivalent _Python_ JSON object
 	o := []interface{}{`foo`, map[string]interface{}{`bar`: []interface{}{`baz`, nil, 1, 1.5, 0.0001, 1000, 2, -23.1234, 2}}}
 	printObjectHash(o)
@@ -109,7 +109,7 @@ func ExampleObjectHash_JSON2() {
 	// 783a423b094307bcb28d005bc2f026ff44204442ef3513585e7e73b66e3c2213
 }
 
-func ExampleObjectHash_JSONStruct() {
+func Example_printObjectHash_JSONStruct() {
 	type x struct {
 		Foo string
 		Bar float64
@@ -127,7 +127,7 @@ func ExampleObjectHash_JSONStruct() {
 	// edd3ec3058d604abcba6c4944b2a05ca1104cd1911cb78f93732634530f1e003
 }
 
-func ExampleObjectHash_JSONConsideredDangerous() {
+func Example_printObjectHash_JSONConsideredDangerous() {
 	n := 9007199254740992
 	nn, err := CommonJSONify(n)
 	if err != nil {
@@ -144,25 +144,25 @@ func ExampleObjectHash_JSONConsideredDangerous() {
 	// 9e7d7d02dacab24905c2dc23391bd61d4081a9d541dfafd2469c881cc6c748e4
 }
 
-func ExampleObjectHash_Set() {
+func Example_printObjectHash_Set() {
 	o := map[string]interface{}{`thing1`: map[string]interface{}{`thing2`: Set{1, 2, `s`}}, `thing3`: 1234.567}
 	printObjectHash(o)
 	// Output: 618cf0582d2e716a70e99c2f3079d74892fec335e3982eb926835967cb0c246c
 }
 
-func ExampleObjectHash_ComplexSet() {
+func Example_printObjectHash_ComplexSet() {
 	o := Set{`foo`, 23.6, Set{Set{}}, Set{Set{1}}}
 	printObjectHash(o)
 	// Output: 3773b0a5283f91243a304d2bb0adb653564573bc5301aa8bb63156266ea5d398
 }
 
-func ExampleObjectHash_ComplexSetRepeated() {
+func Example_printObjectHash_ComplexSetRepeated() {
 	o := Set{`foo`, 23.6, Set{Set{}}, Set{Set{1}}, Set{Set{}}}
 	printObjectHash(o)
 	// Output: 3773b0a5283f91243a304d2bb0adb653564573bc5301aa8bb63156266ea5d398
 }
 
-func ExampleObjectHash_ArraysAndSlices() {
+func Example_printObjectHash_ArraysAndSlices() {
 	a1 := [0]bool{}
 	printObjectHash(a1)
 
@@ -190,7 +190,7 @@ func ExampleObjectHash_ArraysAndSlices() {
 	// 751293c15d3eacceb5643ac61f9c2f5a597378ef4538de8e7f9188feabf76a81
 }
 
-func ExampleObjectHash_ByteBlobs() {
+func Example_printObjectHash_ByteBlobs() {
 	// Empty byte blobs (arrays & slices) will have different hashes from empty lists.
 	ba1 := [0]byte{}
 	printObjectHash(ba1)
@@ -219,7 +219,7 @@ func ExampleObjectHash_ByteBlobs() {
 	// d877bf4e5023a6df5262218800a7162e240c84e44696bb2c3ad1c5e756f3dac1
 }
 
-func ExampleObjectHash_Maps() {
+func Example_printObjectHash_Maps() {
 	m1 := map[string]bool{}
 	printObjectHash(m1)
 
@@ -234,7 +234,7 @@ func ExampleObjectHash_Maps() {
 	// 1eb24844c2bb924515efd56f3310d875a3aeaef54d690186d698bfd926a93322
 }
 
-func ExampleObjectHash_SpecialFloatValues() {
+func Example_printObjectHash_SpecialFloatValues() {
 	nan := math.NaN()
 	printObjectHash(nan)
 
@@ -249,7 +249,7 @@ func ExampleObjectHash_SpecialFloatValues() {
 	// 1167518d5554ba86d9b176af0a57f29d425bedaa9847c245cc397b37533228f7
 }
 
-func ExampleObjectHash_UnsupportedType() {
+func Example_printObjectHash_UnsupportedType() {
 	f := func() {}
 	printObjectHash(f)
 	// Output:
